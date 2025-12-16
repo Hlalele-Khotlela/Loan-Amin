@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+ 
+ 
+}
+
+model loanrequest {
+  applicant  String? @db.VarChar(255)
+  amount     Int?
+  status     String? @db.VarChar(200)
+  balance    Int?
+  request_id Int     @id @default(autoincrement())
+  loan_type String  @default("Emegency")
+  
+}
+
+model Member {
+  firstName String
+  lastName  String
+  email     String @unique
+  gender    String
+  phone     String
+  member_Id Int    @id @default(autoincrement())
+}
