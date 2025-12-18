@@ -10,6 +10,13 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { LOANTYPE } from '@prisma/client';
+
+const loanTypeOptions = [
+   { label: "Emergency", value: LOANTYPE.EMERGENCY },
+    { label: "Short-term", value: LOANTYPE.SHORT_TERM },
+     { label: "Long-term", value: LOANTYPE.LONG_TERM }, 
+    ];
 
 const formSchema = z.object({
   loanStatus: z.enum(["Reject", "Accept"], {
@@ -191,12 +198,14 @@ export default function loansrequests() {
               className="border border-gray-300 rounded px-2 py-1"
               // onchange="filterTable()"
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
+              onChange={(e) => setSelectedType(e.target.value as LOANTYPE)}
             >
-              <option value="all">Show All</option>
-              <option value="Emergency">Emergency</option>
-              <option value="Short-term">Short-term</option>
-              <option value="Long-term">Long-term</option>
+                <option value="all">Show All</option>
+  {loanTypeOptions.map(opt => (
+    <option key={opt.value} value={opt.value}>
+      {opt.label}
+    </option>
+  ))}
               
             </select>
 

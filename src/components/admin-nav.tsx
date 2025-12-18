@@ -27,6 +27,11 @@ export function AdminNav() {
           <FileSliders className='inline-block mr-2 h-4 w-4 text-primary' />
           <span className='font-medium'>Deposit Slips</span>  
           </Link>
+
+          <Link href="#" className='w-full mt-4 block'>
+          <FileSliders className='inline-block mr-2 h-4 w-4 text-primary' />
+          <span className='font-medium'>Loans</span>  
+          </Link>
         </ul>
          
       </div>);
