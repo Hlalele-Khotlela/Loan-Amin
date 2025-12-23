@@ -22,6 +22,8 @@ model loanrequest {
   balance    Int?
   request_id Int     @id @default(autoincrement()) 
   loan_type LOANTYPE  
+  member_Id Int
+  member    Member @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   
 }
 
@@ -32,6 +34,8 @@ model Member {
   gender    String
   phone     String
   member_Id Int    @id @default(autoincrement())
+  loanrequest loanrequest[]
+  loan  Loan[]
 }
 
 model Loan {
@@ -44,4 +48,18 @@ model Loan {
   balance Decimal @db.Decimal(12, 2)
   loan_id Int  @id @default(autoincrement())
   request_id Int @unique
+  member    Member @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
+  created_at  DateTime @default(now())
+  member_Id Int
+  transactions LoanTransaction[]
+
+}
+model LoanTransaction {
+  id Int @id @default(autoincrement())
+  loan_id Int
+  applied_at DateTime @default(now())
+  new_balance Decimal
+  interest Decimal
+
+  loan Loan @relation(fields: [loan_id], references: [loan_id])
 }

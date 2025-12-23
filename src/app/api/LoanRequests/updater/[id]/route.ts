@@ -20,7 +20,7 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
   });
 
   const amount = updated.amount;
-  const intrest=  amount.mul(new Prisma.Decimal(0.2));
+  const intrest=  new Prisma.Decimal(0);
   const totalAmount= amount.add(intrest);
   const installment = new Prisma.Decimal(0);
   const balance = totalAmount.sub(installment);
@@ -35,6 +35,8 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
         loan_type: updated.loan_type,
         balance : balance,
         instalments: installment,
+        member_Id: updated.member_Id,
+        
       }
     })
 

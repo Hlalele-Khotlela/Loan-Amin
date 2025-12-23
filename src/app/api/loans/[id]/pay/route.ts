@@ -18,8 +18,8 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
   if (!loan) return NextResponse.json({ error: "Loan not found" }, { status: 404 });
 
   const paymentDecimal= new Prisma.Decimal(paymentAmount);
-  const newBalance = loan.balance.sub(paymentDecimal);
-  const newInstallment= loan.instalments.add(paymentDecimal);
+//   const newBalance = loan.balance.sub(paymentDecimal);
+//   const newInstallment= loan.instalments.add(paymentDecimal);
 
 
 

@@ -57,6 +57,8 @@ export async function GET(req: Request) {
           balance: true,
           totals: true,
           loan_type: true,
+          created_at: true,
+          member_Id: true,
         }
       });
       // Log the raw rows before sending

@@ -4,7 +4,7 @@ import { AdminNav } from '@/components/admin-nav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form';
 import { toast } from '@/hooks/use-toast';
-import { Link } from 'lucide-react';
+// import { Link } from 'lucide-react';
 import { Form } from "@/components/ui/form";
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import {  LOANTYPE } from "@prisma/client";
 import { Decimal } from "decimal.js";
-
+import Link from 'next/link';
 import { PaymentModal } from "@/components/loan-modal";
 
 
@@ -20,6 +20,8 @@ import { PaymentModal } from "@/components/loan-modal";
 interface Loan {
   loan_id: number; 
   name: string; 
+  member_Id: number;
+  created_at: Date;
   amount: Decimal;
   instalments: Decimal;
   intrests: Decimal; 
@@ -27,6 +29,7 @@ interface Loan {
   totals: Decimal;
    balance: Decimal; 
   request_id: number;
+  
 }
 
 export default function LoansPage() {
@@ -115,8 +118,12 @@ export default function LoansPage() {
                 <tbody>
                 {Loan.map((request: any)=>(
                   <tr key={request.loan_id} className="border-b">
-                    <td className="py-2 ">{request.loan_id}</td>
-                    <td className="py-2">{request.name}</td>
+                    <td className="py-2 "><Link href={`/admin/Loans/${request.member_Id}/${request.loan_id}/transactions`}>{request.loan_id}</Link>
+                      </td>
+                    <td className="py-2">
+                      <Link href={`/admin/Loans/${request.member_Id}`}>
+                    {request.name}
+                    </Link></td>
                     <td className="py-2">{request.amount}</td>
                     <td className="py-2">{request.instalments}</td>
                     <td className="py-2">{request.intrests}</td>

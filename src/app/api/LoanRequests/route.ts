@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       if (loan_type && loan_type !== "all") {
         where.loan_type = {
           equals: loan_type,
-          mode: "insensitive",
+          
         }
       }
       if (search) {
