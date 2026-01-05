@@ -252,9 +252,10 @@ export default function loansrequests() {
                             value={status[request.request_id] ?? request.status}  
                             onChange={(e) => handlechange(request.request_id, e.target.value)}
                           >
+                            
+                            <option value="pending">Pending</option>
                             <option value="approved">Accept</option>
                             <option value="rejected">Reject</option>
-                            <option value="pending">Pending</option>
                           </select>
                        
 

@@ -33,6 +33,22 @@ export function AdminNav() {
           <span className='font-medium'>Loan Request</span>  
           </Link>
 
+          <Link href="/admin/savings" className='w-full mt-4 block'>
+          <PiggyBank className='inline-block mr-2 h-4 w-4 text-primary' />
+          <span className='font-medium'>Create Group Savings</span>  
+          </Link>
+
+          <Link href="/admin/dashboard/groups" className='w-full mt-4 block'>
+          <FileSliders className='inline-block mr-2 h-4 w-4 text-primary' />
+          <span className='font-medium'>Groups Savings</span>  
+          </Link>
+
+          <Link href="/admin/members" className='w-full mt-4 block'>
+          <FileSliders className='inline-block mr-2 h-4 w-4 text-primary' />
+          <span className='font-medium'>Members</span> 
+          
+          </Link>
+
           <Link href="#" className='w-full mt-4 block'>
           <FileSliders className='inline-block mr-2 h-4 w-4 text-primary' />
           <span className='font-medium'>Deposit Slips</span>  

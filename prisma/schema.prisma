@@ -5,6 +5,17 @@ enum LOANTYPE {
   LONG_TERM
 }
 
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+enum SAVINGSTYPE {
+  VOLUNTARY
+  COMPULSARY
+  SPEACIAL
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -36,6 +47,11 @@ model Member {
   member_Id Int    @id @default(autoincrement())
   loanrequest loanrequest[]
   loan  Loan[]
+  savings Savings[]
+  groupSavings GroupSaving[] @relation("GroupMembership")
+  GroupDeposits GroupDeposit[]
+  GroupWithdrawal GroupWithdrawal[]
+  
 }
 
 model Loan {
@@ -54,6 +70,32 @@ model Loan {
   transactions LoanTransaction[]
 
 }
+model GroupSaving{
+  group_id  Int @id @default(autoincrement())
+  name    String
+  savings_type String
+  amount Decimal @db.Decimal(12, 2)
+  started_at DateTime @default(now())
+  deposits  GroupDeposit[]
+  withdraw  GroupWithdrawal[]
+  total_Savings Decimal @db.Decimal(12, 2) @default(0)
+  current_total  Decimal    @db.Decimal(12, 2) @default(0)
+ 
+
+   members      Member[]  @relation("GroupMembership")
+}
+model Savings{
+  member    Member @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
+  amount  Decimal @db.Decimal(12, 2)
+  total  Decimal @db.Decimal(12, 2) @default(0)
+  
+  interest Decimal @db.Decimal(12, 2)
+  savings_id Int @id @default(autoincrement())
+  savings_type SAVINGSTYPE
+  started_at  DateTime @default(now())
+  member_Id Int
+  transactions  SavingsTransaction[]
+}
 model LoanTransaction {
   id Int @id @default(autoincrement())
   loan_id Int
@@ -62,4 +104,38 @@ model LoanTransaction {
   interest Decimal
 
   loan Loan @relation(fields: [loan_id], references: [loan_id])
+}
+
+
+model SavingsTransaction {
+  id          Int      @id @default(autoincrement())
+  savings_id  Int
+  saving    Savings  @relation(fields: [savings_id], references: [savings_id], onDelete: Cascade)
+  
+  amount      Decimal @db.Decimal(12, 2)
+  type        TransactionType
+  created_at  DateTime @default(now())
+}
+
+model GroupDeposit {
+  deposit_id   Int        @id @default(autoincrement())
+  amount       Decimal    @db.Decimal(12, 2)
+  deposited_at DateTime   @default(now())
+
+  member_Id    Int
+  group_id     Int
+
+  member       Member     @relation(fields: [member_Id], references: [member_Id])
+  group        GroupSaving @relation(fields: [group_id], references: [group_id])
+}
+
+model GroupWithdrawal {
+  withdrawal_id Int      @id @default(autoincrement())
+  amount        Decimal   @db.Decimal(12, 2)
+  member_Id     Int
+  group_id      Int
+  created_at    DateTime  @default(now())
+
+  member        Member      @relation(fields: [member_Id], references: [member_Id])
+  group         GroupSaving @relation(fields: [group_id], references: [group_id])
 }
