@@ -43,19 +43,22 @@ export async function GET(req: Request) {
   
  
       const result = await prisma.loan.findMany({
-        where,
+        where:{
+          status:"active"
+        },
         skip,
         take: limit,
+        
         orderBy: { request_id: "desc" },
         select: {
           request_id: true,
-          name: true,
+          // name: true,
           instalments: true,
           intrests: true,
           loan_id: true,
-          amount: true,
+          Principal: true,
           balance: true,
-          totals: true,
+          totals_payeable: true,
           loan_type: true,
           created_at: true,
           member_Id: true,

@@ -1,6 +1,8 @@
+import GroupTransactions from "@/components/grouptrans";
 import GroupSummary from "../../../../../components/GroupSummary";
-import MembersList from "../../../../../components/MembersList";
+import GroupMembersList from "../../../../../components/GroupMembersList";
 import RecentActivity from "../../../../../components/RecentActivity";
+// import { useRouter } from "next/navigation";
 
 
 interface PageProps {
@@ -12,6 +14,7 @@ const res = await fetch(new URL(`/api/GroupSavings/${groupId}`, baseUrl), {
         cache: "no-store", });
 
   const group = await res.json();
+  // const router = useRouter();
 //   console.log("STATUS:", res.status);
 // console.log("RAW:", await res.text());
 
@@ -20,9 +23,17 @@ const res = await fetch(new URL(`/api/GroupSavings/${groupId}`, baseUrl), {
 
   return (
     <div className="p-6 space-y-6">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">Group Dashboard</h1>
+        <p className="text-gray-600">Overview of group activities and members.</p>
+      </div>
+
+     
+    
       <GroupSummary group={group} />
-      <MembersList members={group.members} />
+      <GroupMembersList members={group.members} />
       <RecentActivity deposits={group.deposits} withdrawals={group.withdrawals} />
+      <GroupTransactions groupId={Number(groupId)} />
     </div>
   );
 }

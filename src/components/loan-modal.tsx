@@ -18,7 +18,7 @@ export function PaymentModal({ isOpen, loan, onClose }: LoanModalProps) {
       <div className="bg-white rounded-lg shadow-lg p-6 w-96">
         <h2 className="text-xl font-bold mb-4">Make Payment</h2>
         <p><strong>Loan ID:</strong> {loan.loan_id}</p>
-        <p><strong>Name:</strong> {loan.name}</p>
+        <p><strong>Name:</strong> {loan.member_Id}</p>
         <p><strong>Loan Type:</strong> {loan.loan_type}</p>
         <p><strong>Balance:</strong> {loan.balance.toString()}</p>
 
@@ -40,6 +40,17 @@ export function PaymentModal({ isOpen, loan, onClose }: LoanModalProps) {
           </button>
           <button
             onClick={async () => {
+              const amount= Number(paymentAmount);
+
+              // prevent overpayment
+              if(amount<= 0){
+                alert("payment must be greater than 0");
+                return;
+              }
+              if (amount > Number(loan.balance)){
+                  alert("amount cannot be greater than current balance");
+                  return;
+              }
               // TODO: call API to process payment
               try{
                 setloans((prevLoans) =>
@@ -48,7 +59,8 @@ export function PaymentModal({ isOpen, loan, onClose }: LoanModalProps) {
                 {
                   ...l,
                   // balance: l.balance.sub(paymentAmount),
-                  instalments: l.instalments.add(paymentAmount)
+                  instalments: l.instalments.add(paymentAmount),
+                  balance: l.balance.sub(amount),
                 }
                 :l
                 )

@@ -30,6 +30,16 @@ export async function POST(req: Request,
             },
         });
 
+         await prisma.groupSavingsTransaction.create({
+      data: {
+        group_id: group_id,
+        member_Id: memberId,
+        amount: amount,
+        type: "DEPOSIT",
+        Description: `Deposit by member ID ${memberId}`,
+      },
+    });
+
         //update the group's total savings
        await prisma.groupSaving.update({
         

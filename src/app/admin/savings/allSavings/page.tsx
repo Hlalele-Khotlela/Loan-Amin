@@ -1,6 +1,8 @@
 "use client";
 
 import {DepositModal} from "@/components/deposit-modal";
+import SavingsActions from "@/components/savins-acts";
+
 import { useEffect, useState } from "react";
 
 type Savings = {
@@ -39,7 +41,10 @@ const [selectedSavingsId, setSelectedSavingsId] = useState<number | null>(null);
 
   return (
     <div className="p-6">
+      
+
       <h2 className="text-xl font-bold mb-4">Savings Accounts</h2>
+      <SavingsActions />
       
 
       <table className="min-w-full border border-gray-300 rounded-md shadow-sm">

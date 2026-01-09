@@ -27,7 +27,8 @@ export async function POST(req: Request) {
             connect: member_Ids.map((id: number) => ({member_Id: id })),
            },
            amount: new Prisma.Decimal(amount),   
-           total_Savings: amount   
+           total_Savings: total,
+        //    interest: interest,   
              
            
             

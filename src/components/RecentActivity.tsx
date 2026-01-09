@@ -18,6 +18,10 @@ export default function RecentActivity({ deposits, withdrawals }: { deposits: Gr
             <span>- R {Number(w.amount).toFixed(2)}</span>
           </div>
         ))}
+
+        
+
+        
       </div>
     </div>
   );

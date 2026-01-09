@@ -53,6 +53,17 @@ export async function POST(
       },
     });
 
+    // transaction record
+    await prisma.groupSavingsTransaction.create({
+      data: {
+        group_id: id,
+        member_Id: memberId,
+        amount: amount,
+        type: "WITHDRAWAL",
+        Description: `Withdrawal by member ID ${memberId}`,
+      },
+    });
+
     return NextResponse.json(withdrawal, { status: 201 });
   } catch (error) {
     console.error("Error creating group withdrawal:", error);

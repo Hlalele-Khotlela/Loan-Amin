@@ -10,25 +10,32 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import {  LOANTYPE } from "@prisma/client";
+import {  LoanStatus, LOANTYPE } from "@prisma/client";
 import { Decimal } from "decimal.js";
 import Link from 'next/link';
 import { PaymentModal } from "@/components/loan-modal";
-
+import LoanActions  from "@/components/Loan-acts";
 
 
 interface Loan {
+  totals_payeable: Decimal;
+  collectral: string;
+  collectralName3: string;
+  collectralName2: string;
+  collectralName1: string;
+  MinInstament: Decimal;
   loan_id: number; 
-  name: string; 
   member_Id: number;
   created_at: Date;
-  amount: Decimal;
+  Principal: Decimal;
   instalments: Decimal;
   intrests: Decimal; 
   loan_type: LOANTYPE; 
   totals: Decimal;
    balance: Decimal; 
   request_id: number;
+  status: LoanStatus ;
+  Loan_Duration: number;
   
 }
 
@@ -92,12 +99,14 @@ export default function LoansPage() {
     
   return (
     <div className='flex gap-6'>    
-        <AdminNav />
+        
         <div className="flex-1">
           <Card>
             <CardHeader>
               <CardTitle>Loans</CardTitle>
               <CardDescription>See all loans and their details</CardDescription>
+              
+               <LoanActions />
             </CardHeader>
             <CardContent>
               {/* Loan content goes here */}
@@ -105,9 +114,9 @@ export default function LoansPage() {
                 <thead>
                   <tr>
                     <th className="border border-slate-300 px-4 py-2">Loan ID</th>
-                    <th className="border border-slate-300 px-4 py-2">Name</th>
+                    <th className="border border-slate-300 px-4 py-2">Pass#</th>
                     <th className="border border-slate-300 px-4 py-2">Amount</th>
-                    <th className="border border-slate-300 px-4 py-2">Instalments</th>
+                    
                     <th className="border border-slate-300 px-4 py-2">Interests</th>
                     <th className="border border-slate-300 px-4 py-2">Loan Type</th>
                     <th className="border border-slate-300 px-4 py-2">Total</th>
@@ -122,13 +131,13 @@ export default function LoansPage() {
                       </td>
                     <td className="py-2">
                       <Link href={`/admin/Loans/${request.member_Id}`}>
-                    {request.name}
+                    {request.member_Id}
                     </Link></td>
-                    <td className="py-2">{request.amount}</td>
-                    <td className="py-2">{request.instalments}</td>
+                    <td className="py-2">{request.Principal}</td>
+                  
                     <td className="py-2">{request.intrests}</td>
                     <td className="py-2">{request.loan_type}</td>
-                    <td className="py-2">{request.totals}</td>
+                    <td className="py-2">{request.totals_payeable}</td>
                     <td className="py-2">{request.balance}</td>
                     <td className="py-2">
                       <button

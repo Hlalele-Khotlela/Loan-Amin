@@ -13,9 +13,9 @@ export async function POST() {
 
     await prisma.loan.update({
       where: { loan_id: loan.loan_id },
-      data: {
+      data: { 
         balance: newBalance,
-        intrests: intrest,
+        intrests: {increment: intrest},
         // totals: newBalance, // optional: keep totals in sync
       },
     });
@@ -26,8 +26,10 @@ export async function POST() {
 await prisma.loanTransaction.create({
     data: {
         loan_id: loan.loan_id,
-        interest:intrest,
+        amount:intrest,
         new_balance: newBalance,
+        type: "interest"
+        
     },
 });
 }

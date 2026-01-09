@@ -38,9 +38,11 @@ export async function POST(
     }
 
     let newBalance = savings.amount;
+    let totals = savings.total;
 
     if (action === "DEPOSIT") {
       newBalance = savings.amount.add(amount);
+      totals = savings.total.add(amount);
     } else if (action === "WITHDRAW") {
       if (amount > savings.amount) {
         return NextResponse.json(
@@ -49,12 +51,13 @@ export async function POST(
         );
       }
       newBalance = savings.amount.sub(amount);
+       totals = savings.total.add(amount);
     }
-
+    
     // Update savings balance
     const updatedSavings = await prisma.savings.update({
       where: { savings_id: savingsId },
-      data: { amount: newBalance },
+      data: { amount: newBalance, total: totals },
     });
 
     // Record transaction (optional table)

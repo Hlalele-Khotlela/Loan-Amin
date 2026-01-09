@@ -26,3 +26,5 @@ export async function GET() {
     );
   }
 }
+
+// this is for displaying all members

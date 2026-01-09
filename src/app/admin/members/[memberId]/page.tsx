@@ -1,11 +1,12 @@
 import Link from "next/link";
-
-export default async function MemberProfile({
+import { getMemberDashboardData } from "../../../../lib/memberAgg/route";
+export default async function MemberProfile({ 
   params,
 }: {
   params: Promise<{ memberId: string }>;
 }) {
   const { memberId } = await params;
+  const mymemberId = parseInt(memberId, 10);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:9002";
 
@@ -20,6 +21,20 @@ export default async function MemberProfile({
   }
 
   const member = await res.json();
+
+  const dashboardData = await getMemberDashboardData(mymemberId);
+
+  if(!member){
+    return(
+      <p>Member not available</p>
+    );
+  }
+
+  // aggregations
+
+  
+
+    
 
   return (
     <div className="space-y-8">
@@ -41,7 +56,7 @@ export default async function MemberProfile({
             href={`/admin/members/${memberId}/groups`}
             className="px-4 py-2 bg-gray-700 text-white rounded-md"
           >
-            Manage Groups
+            Delete Member
           </Link>
         </div>
       </div>
@@ -49,10 +64,36 @@ export default async function MemberProfile({
       
 
       {/* Member Info */}
-      <div className="bg-white shadow rounded-lg p-6 border space-y-2">
-        <h2 className="text-lg font-semibold">Member Information</h2>
+      <div className="bg-white shadow rounded-lg p-6 border space-y-2 grid grid-cols-4 gap-6">
+        <div className=" gap-2 ">
+           <h2 className="text-lg font-semibold">Member Information</h2>
         <p><strong>Phone:</strong> {member.phone}</p>
-        <p><strong>Joined:</strong> {new Date(member.created_at).toDateString()}</p>
+        <p><strong>Joined:</strong> {new Date(member.createdAt).toDateString()}</p>
+
+        </div>
+        <div className="gap-8">
+          <h2 className="text-lg font-semibold">Loans</h2>
+          {/* <p>Total Borrowed: {loans._sum.Principal}</p> */}
+            <p>Total Borrowed: {dashboardData.loans._sum.Principal?.toString() ?? "0"}</p>
+        <p>Total Payable: {dashboardData.loans._sum.totals_payeable?.toString() ?? "0"}</p>
+        <p>Outstanding Balance: {dashboardData.loans._sum.balance?.toString() ?? "0"}</p>
+        </div>
+
+          <div className="gap-8">
+          <h2 className="text-lg font-semibold">Savings</h2>
+          <p>Total Savings: {dashboardData.savings._sum.amount?.toString() ?? "0"}</p>
+
+        </div>
+
+          <div className="gap-8">
+          <h2 className="text-lg font-semibold">Group Savings</h2>
+          {dashboardData.groupTransactions.map((tx) => (
+          <p key={tx.type}>
+            {tx.type}: {tx._sum.amount?.toString()}
+          </p>
+        ))}
+        </div>
+       
       </div>
 
       {/* Loans */}
@@ -62,46 +103,94 @@ export default async function MemberProfile({
           <p className="text-gray-600">No loans recorded.</p>
         ) : (
           <ul className="space-y-2">
-            {member.loan.map((l: any) => (
-              <div key={l.loan_id} className="border rounded p-4">
-                <p><strong>Loan Amount:</strong> R {l.amount}</p>
-          <p><strong>Interest :</strong> {l.intrests}</p>
-          <p><strong>Total Payable:</strong> R {l.totals}</p>
-          <p><strong>Instalment:</strong> R {l.instalments}</p>
-          <p><strong>Balance:</strong> R {l.balance}</p>
-          <p><strong>Loan Type</strong> {l.loan_type}</p>
-          <p><strong>Issued:</strong> {new Date(l.created_at).toLocaleDateString()}</p>
+            <table className="min-w-full border border-gray-300">
+              <thead>
                 
-              </div>
-            ))}
+                  <tr className="bg-gray-100">
+               <th className="px-4 py-2 border">Principal</th>
+               <th className="px-4 py-2 border">Interest</th>
+               <th className="px-4 py-2 border">Balance</th>
+              <th className="px-4 py-2 border">Type</th>
+              <th className="px-4 py-2 border">Issued</th>
+              <th className="px-4 py-2 border">View</th>
+                </tr>
+              </thead>
+              <tbody>
+               {member.loan.map((l: any) =>(
+                <tr key={l.loan_id}>
+                 <td className="px-4 py-4 border">
+                   {l.Principal}
+               </td>
+                <td className="px-4 py-4 border">{l.intrests}</td>
+                <td className="px-4 py-4 border">{l.balance.toString()}</td>
+              <td className="px-4 py-4 border">{l.loan_type}</td>
+                   <td className="px-4 py-4 border"> {new Date(l.created_at).toLocaleDateString()}</td>
+                   <td className="px-4 py-4 border"> 
+                                           <Link
+                    href={`/admin/Loans/${l.member_Id}/${l.loan_id}/transactions`}
+                    className="text-green-600"
+                  >
+                    View
+                  </Link>
+                   </td>
+            </tr>
+               ))}
+              </tbody>
+            </table>
+            
           </ul>
         )}
       </div>
 
+      
       {/* Individual Savings */}
-        <div className="bg-white shadow rounded-lg p-6 border">
-            <h2 className="text-lg font-semibold mb-4">Individual Savings</h2>
 
-            {member.savings.length === 0 ? (
-                <p className="text-gray-600">No  Active Savings</p>
-            ) : (
-                <ul className="space-y-3">
-                    {member.savings.map((s: any) =>(
-                        <li key={s.savings_id}>
-                            <p><strong>Savings Type</strong> {s.savings_type}</p>
-                            <p><strong>Amount</strong> {s.amount}</p>
-                            <p><strong>Interests</strong> {s.interest}</p>
-                            <p><strong>Started At</strong> {new Date(s.started_at).toLocaleDateString()}</p>
-                            <p><strong>Accoumulated totals</strong> {s.total}</p>
-
-                        </li>
-                    ))}
-                </ul>
-            )
-
+        <div className="bg-white shadow rounded-lg p-6 border space-y-2">
+        <h2 className="text-lg font-semibold">Individual Savings</h2>
+        {member.savings.length === 0 ? (
+          <p className="text-gray-600">No Individual recorded.</p>
+        ) : (
+          <ul className="space-y-2">
+            <table className="min-w-full border border-gray-300">
+              <thead>
+                
+                  <tr className="bg-gray-100">
+               <th className="px-4 py-2 border">Savings Type</th>
+               <th className="px-4 py-2 border">Amount</th>
+               <th className="px-4 py-2 border">Interests</th>
+              <th className="px-4 py-2 border">Started At</th>
+              <th className="px-4 py-2 border">Accoumulated totals</th>
+              <th className="px-4 py-2 border">View</th>
+                </tr>
+              </thead>
+              <tbody>
+               {member.savings.map((s: any) =>(
+                <tr key={s.savings_id}>
+                 <td className="px-4 py-4 border">
+                   {s.savings_type}
+               </td>
+                <td className="px-4 py-4 border">{s.amount}</td>    
+                <td className="px-4 py-4 border">{s.interest}</td>                          
+                   <td className="px-4 py-4 border"> {new Date(s.started_at).toLocaleDateString()}</td>
+                   <td className="px-4 py-4 border">{s.total}</td>
+                   <td className="px-4 py-4 border"> 
+                                           <Link
+                    href={`/admin/Loans//transactions`}
+                    className="text-green-600"
+                  >
+                    View
+                  </Link>
+                   </td>
+            </tr>
+               ))}
+              </tbody>
+            </table>
             
-        }
-            </div>
+          </ul>
+        )}
+      </div>
+
+   
 
       {/* Group Groups */}
       <div className="bg-white shadow rounded-lg p-6 border">
@@ -134,7 +223,7 @@ export default async function MemberProfile({
         ) : (
           <ul className="space-y-2">
             {member.GroupDeposits.map((d: any) => (
-              <li key={d.id} className="border-b pb-2">
+              <li key={d.deposit_id} className="border-b pb-2">
                 R {d.amount} — {new Date(d.deposited_at).toLocaleDateString()}
               </li>
             ))}
@@ -161,15 +250,15 @@ export default async function MemberProfile({
 
       {/* Group Withdrawals */}
       <div className="bg-white shadow rounded-lg p-6 border">
-        <h2 className="text-lg font-semibold mb-4">Withdrawals</h2>
+        <h2 className="text-lg font-semibold mb-4">Group Withdrawals</h2>
 
         {member.GroupWithdrawal.length === 0 ? (
           <p className="text-gray-600">No withdrawals recorded.</p>
         ) : (
           <ul className="space-y-2">
             {member.GroupWithdrawal.map((w: any) => (
-              <li key={w.id} className="border-b pb-2">
-                R {w.amount} — {new Date(w.created_at).toLocaleDateString()}
+              <li key={w.withdrawal_id} className="border-b pb-2">
+                R {w.amount} — {new Date(w.created_at).toLocaleDateString()} -- Group#{w.group_id}
               </li>
             ))}
           </ul>

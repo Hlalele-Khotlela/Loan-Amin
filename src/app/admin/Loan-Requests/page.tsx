@@ -177,7 +177,7 @@ export default function loansrequests() {
 
   return (
     <div className='flex gap-2'>
-      <AdminNav />
+      
 
       <Card className="shadow-lg flex-auto">
         <CardHeader>

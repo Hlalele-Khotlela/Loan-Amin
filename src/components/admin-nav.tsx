@@ -3,17 +3,14 @@
 import Link from 'next/link';
 import { Home, UserPlus, PiggyBank, FileSliders } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from '@/hooks/use-toast';
 
 
 export function AdminNav() {
   const [loading, setLoading]= useState(false);
 
-  async function applyIntrest(){
-    setLoading(true);
-    await fetch("/api/apply-Intrest", {method: "POST"});
-    setLoading(false);
-    alert("monthly intrest applied")
-  }
+ 
+
   return ( 
 
 <div className='w-64 flex-none shadow-lg bg-slate-200 rounded-lg border p-6'>
@@ -33,9 +30,9 @@ export function AdminNav() {
           <span className='font-medium'>Loan Request</span>  
           </Link>
 
-          <Link href="/admin/savings" className='w-full mt-4 block'>
+          <Link href="/admin/savings/allSavings" className='w-full mt-4 block'>
           <PiggyBank className='inline-block mr-2 h-4 w-4 text-primary' />
-          <span className='font-medium'>Create Group Savings</span>  
+          <span className='font-medium'> Savings</span>  
           </Link>
 
           <Link href="/admin/dashboard/groups" className='w-full mt-4 block'>
@@ -59,10 +56,6 @@ export function AdminNav() {
           <span className='font-medium'>Loans</span>  
           </Link>
         </ul>
-        <button
-        onClick={applyIntrest}
-        disabled={loading}
-         className='mt-4 px-4 py-2 bg-blue-600 text-white rounded'>Apply Monthly intrests</button>
-         
+       
       </div>);
 }
