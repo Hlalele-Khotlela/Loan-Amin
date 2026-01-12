@@ -1,7 +1,8 @@
 "use client";
 
-import {DepositModal} from "@/components/deposit-modal";
+import {SavingsTransactionModal} from "@/components/SavingTransactionModal";
 import SavingsActions from "@/components/savins-acts";
+import Link from "next/link";
 
 import { useEffect, useState } from "react";
 
@@ -20,6 +21,10 @@ type Savings = {
 export default function SavingsTable() {
   const [Savings, setSavings] = useState<Savings[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isDepositOpen, setDepositOpen] = useState(false);
+  const [isWithdrawalOpen, setWithdrawalOpen] = useState(false);
+
   
 const [selectedSavingsId, setSelectedSavingsId] = useState<number | null>(null);
 
@@ -64,8 +69,9 @@ const [selectedSavingsId, setSelectedSavingsId] = useState<number | null>(null);
           {Savings.length > 0 ? (
             Savings.map((s) => (
               <tr key={s.savings_id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border">{s.savings_id}</td>
-                <td className="px-4 py-2 border">{s.member_Id}</td>
+                
+                <td className="px-4 py-2 border"><Link href={`/admin/savings/allSavings/${s.member_Id}/${s.savings_id}/`}>{s.savings_id}</Link></td>
+                <td className="px-4 py-2 border"><Link href={`/admin/savings/allSavings/${s.member_Id}/`}>{s.member_Id}</Link></td>
                 <td className="px-4 py-2 border">{s.savings_type}</td>
                 <td className="px-4 py-2 border">{s.amount}</td>
                 <td className="px-4 py-2 border">{s.interest}</td>
@@ -76,30 +82,23 @@ const [selectedSavingsId, setSelectedSavingsId] = useState<number | null>(null);
                 <td className="px-4 py-2 border">
                   <button 
                   onClick={() => {
-                    setIsModalOpen(true);
+                    setDepositOpen(true);
                     setSelectedSavingsId(s.savings_id);
                   }}
                   className="text-blue-600 hover:underline mr-2">
                   Deposit  
                     </button>
-                    {selectedSavingsId !== null && (
-                      <DepositModal
-                        savingsId={selectedSavingsId}
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                    />)}
-
-                    {/* <DepositModal
-                        savingsId={selectedSavingsId}
+                   
                         
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                    /> */}
-                    
-                    <button className="text-green-600 hover:underline mr-2">
+                    <button className="text-green-600 hover:underline mr-2"
+                    onClick={() => {
+                    setWithdrawalOpen(true);
+                    setSelectedSavingsId(s.savings_id);
+                  }}
+                    >
+                      
                     Withdraw
                     </button>
-
                  </td>
               </tr>
             ))
@@ -115,6 +114,30 @@ const [selectedSavingsId, setSelectedSavingsId] = useState<number | null>(null);
           )}
         </tbody>
       </table>
+
+      {/* deposit modal */}
+      {selectedSavingsId !== null && (
+        <SavingsTransactionModal
+                          isOpen={isDepositOpen}
+                          savingsId={selectedSavingsId}
+                          mode="DEPOSIT"
+                          onClose={() => setDepositOpen(false)}
+                        />
+      )}
+
+      {/* Withdrawal modals */}
+
+      {selectedSavingsId !== null && (
+                            <SavingsTransactionModal
+  isOpen={isWithdrawalOpen}
+  savingsId={selectedSavingsId}
+  mode="WITHDRAWAL"
+  onClose={() => setWithdrawalOpen(false)}
+/>
+
+      )}
+
+
     </div>
   );
 }

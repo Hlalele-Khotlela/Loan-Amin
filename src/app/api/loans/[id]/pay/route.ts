@@ -50,3 +50,48 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
 
   return NextResponse.json(updatedLoan);
 }
+
+// Delete Loan
+
+export async function DELETE(_: Request, context: {params: Promise<{id: string}>}){
+  const {id}= await context.params;
+  const LoanId= parseInt(id, 10);
+
+  await prisma.loan.update({
+    where:{loan_id:LoanId},
+    data :{status: "inactive"}
+    
+  });
+  return NextResponse.json({success: true});
+
+}
+
+// PUT (edit/update)
+
+export async function PUT(req: Request, context: {params: Promise<{id: string}>}){
+  const {id} = await context.params;
+  const LoanId = parseInt(id, 10);
+  const body= await req.json();
+  
+  const installments= new Prisma.Decimal(body.instalment)
+  const intresRate = 0.02;
+  const principal =new Prisma.Decimal(body.Principal?? 0)
+  const intrest= principal.mul(intresRate);
+  const totalInt= new Prisma.Decimal(body.interest)
+  const totalpayeable= principal.add(totalInt)
+  const totalAmount=principal.add(totalInt)
+  const balance= totalAmount.sub(installments)
+
+  const updated = await prisma.loan.update({
+    where: {loan_id:LoanId},
+    data:{
+      Principal: principal,
+      balance: balance,
+      instalments:installments,
+      intrests:totalInt,
+      Loan_Duration: body.duration,
+      totals_payeable: totalpayeable,
+    },
+  });
+  return NextResponse.json(updated);
+}

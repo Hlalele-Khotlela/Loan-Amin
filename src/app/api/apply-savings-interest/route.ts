@@ -8,14 +8,14 @@ export async function POST() {
 
   // Apply 1% interest to each loan
   for (const saving of savings) {
-    const intrest = saving.total.mul(new Prisma.Decimal(0.01)); // balance × 1.02
-    const newBalance= saving.total.add(intrest);
+    const intrestInrement = saving.total.mul(new Prisma.Decimal(0.01)); // balance × 1.02
+    const newBalance= saving.total.add(intrestInrement);
 
     await prisma.savings.update({
       where: { savings_id: saving.savings_id },
       data: {
         total: newBalance,
-        interest: intrest,
+        interest: saving.interest.add(intrestInrement),
         // totals: newBalance, // optional: keep totals in sync
       },
     });
@@ -26,7 +26,7 @@ export async function POST() {
 await prisma.savingsTransaction.create({
     data: {
         savings_id: saving.savings_id,
-        amount:intrest,
+        amount:intrestInrement,
         type: "INTEREST",
     },
 });

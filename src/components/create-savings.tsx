@@ -23,8 +23,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // enum SavingsType 
 enum SAVINGSTYPE {
-  COMPULSORY = "COMPULSORY",
-  SPECIAL = "SPEACIAL",
+  COMPULSORY = "COMPULSARY",
+  SPECIAL = "SPECIAL",
   VOLUNTARY = "VOLUNTARY",
   PENSION = "PENSION",
   SECURITY = "SECURITY",
@@ -154,7 +154,7 @@ export default function SavingsRequests() {
                       className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="">Select Savings Type</option>
-                      <option value="COMPULSORY">Compulsory</option>
+                      <option value="COMPULSARY">Compulsory</option>
                       <option value="SPECIAL">Special</option>
                       <option value="VOLUNTARY">Voluntary</option>
                       <option value="PENSION">Pension</option>

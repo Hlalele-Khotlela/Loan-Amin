@@ -7,6 +7,7 @@ interface LoanDetailsProps {
 
 export function LoanDetails({ loan }: LoanDetailsProps) {
   return (
+    
     <div className="border rounded-lg shadow-md p-6 bg-white mb-6">
       <h2 className="text-xl font-bold mb-4">Loan Details</h2>
       <div className="space-y-2">

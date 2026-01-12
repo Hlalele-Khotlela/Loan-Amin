@@ -1,7 +1,7 @@
 
 
 import MembersList from "@/components/MemberList";
-import AdminNav from "@/components/adminTopBar";
+
 
 export default async function MemberList() {
   const res = await fetch("http://localhost:9002/api/Member");

@@ -1,62 +1,52 @@
-import { prisma } from "@/lib/prisma/prisma";
-import { LoanDetails } from "./LoanDetails";
 
+// src/app/admin/Loans/[member_Id]/[loanId]/transactions/page.tsx
+import { prisma } from "@/lib/prisma/prisma";
+
+
+import LoanClient from "./LoanClient";
 export default async function LoanTransaction({
   params,
 }: {
-  params: Promise<{ member_Id: string; loanId: string }>; // ✅ params is a Promise
+  params: Promise<{ member_Id: string; loanId: string }>;
 }) {
-  const { member_Id, loanId } = await params; // ✅ unwrap the Promise
-
+  const {member_Id}= await params;
+  const {loanId} = await params;
+  const memberIdInt = parseInt(member_Id, 10);
   const loanIdInt = parseInt(loanId, 10);
+  const loan= await prisma.loan.findUnique({    
+    where:{
+      loan_id:loanIdInt
+    },
+    include:{transactions: true}
+  })
 
   if (isNaN(loanIdInt)) {
     return <p>Invalid loanId param</p>;
   }
 
-  const loan = await prisma.loan.findUnique({
-    where: { loan_id: loanIdInt },
-    include: { transactions: true },
-  });
-
+  
   if (!loan) {
     return <p>Loan not found</p>;
   }
 
-  return (
-    <div className="p-6">
-      <LoanDetails loan={loan} />
+  // Local state for modal
+// const loan = loans.find((l) => l.loan_id === loanIdInt); 
+if (!loan) { return <p>Loan not found</p>; }
 
-      <h1 className="text-xl font-bold mb-4">
-        Transactions for Loan #{loan.loan_id}
-      </h1>
+  function serializeLoan(loan: any) {
+     return {
+       ...loan, Principal: loan.Principal?.toString() ?? "0.00",
+        instalments: loan.instalments?.toString() ?? "0.00",
+         intrests: loan.intrests?.toString() ?? "0.00",
+          totals_payeable: loan.totals_payeable?.toString() ?? "0.00",
+           balance: loan.balance?.toString() ?? "0.00",
+            MinInstament: loan.MinInstament?.toString() ?? "0.00",
+             transactions: loan.transactions?.map((t: any) => ({
+               ...t, amount: t.amount?.toString() ?? "0.00", new_balance: t.new_balance?.toString() ?? "0.00", })) ?? [], }; }
 
-      {loan.transactions.length === 0 ? (
-        <p>No transactions found.</p>
-      ) : (
-        <table className="min-w-full border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border">Date</th>
-              <th className="px-4 py-2 border">Transaction</th>
-              <th className="px-4 py-2 border">Amount</th>
-              <th className="px-4 py-2 border">New Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loan.transactions.map((tx) => (
-              <tr key={tx.id}>
-                <td className="px-4 py-4 border">
-                  {tx.applied_at.toLocaleDateString()}
-                </td>
-                <td className="px-4 py-4 border">{tx.type}</td>
-                <td className="px-4 py-4 border">{tx.amount.toString()}</td>
-                <td className="px-4 py-4 border">{tx.new_balance.toString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+
+// const serializedLoans = loans.map(serializeLoan);
+
+   return <LoanClient loans={serializeLoan((loan))} />;
+    
 }

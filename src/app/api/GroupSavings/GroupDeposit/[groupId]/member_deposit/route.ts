@@ -1,6 +1,7 @@
 import { group } from "node:console";
 import { prisma } from "../../../../../../lib/prisma/prisma";
 import { NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma/browser";
 
 export async function POST(req: Request, 
     context: { params: Promise<{ groupId: string }> }
@@ -18,6 +19,8 @@ export async function POST(req: Request,
             return NextResponse.json({ message: "Member ID is required" }, { status: 400 });
         }
 
+        
+
         //create a new deposit record
         const deposit = await prisma.groupDeposit.create({
             data: {
@@ -30,6 +33,17 @@ export async function POST(req: Request,
             },
         });
 
+        const deposits = await prisma.groupDeposit.aggregate({
+            where:{group_id},
+            _sum:{amount:true},
+        });
+
+        const withdrawals = await prisma.groupWithdrawal.aggregate({
+            where:{group_id},
+            _sum:{amount:true},
+
+        })
+
          await prisma.groupSavingsTransaction.create({
       data: {
         group_id: group_id,
@@ -40,12 +54,16 @@ export async function POST(req: Request,
       },
     });
 
+    const dep = new Prisma.Decimal(deposits._sum.amount ?? 0);
+    const withdrw = new Prisma.Decimal(withdrawals._sum.amount ?? 0);
+
         //update the group's total savings
        await prisma.groupSaving.update({
         
             where: { group_id: group_id },
             data: {
-                total_Savings: { increment: amount },
+                total_Savings: deposits._sum.amount ?? 0,
+                current_total:dep.sub(withdrw),
             },
         }); 
         return NextResponse.json(deposit, { status: 201 });

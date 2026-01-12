@@ -19,6 +19,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Invalid name' }, { status: 400 });
     }
 
+   
+
     const newSavings = await prisma.groupSaving.create({
         data: {
            name,
@@ -28,6 +30,7 @@ export async function POST(req: Request) {
            },
            amount: new Prisma.Decimal(amount),   
            total_Savings: total,
+           current_total: total,
         //    interest: interest,   
              
            

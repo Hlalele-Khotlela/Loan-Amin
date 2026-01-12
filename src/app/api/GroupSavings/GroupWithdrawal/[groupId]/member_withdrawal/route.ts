@@ -1,5 +1,6 @@
 import { prisma } from "../../../../../../lib/prisma/prisma";
 import { NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma/browser";
 
 export async function POST(
   req: Request,
@@ -46,10 +47,27 @@ export async function POST(
     });
 
     // 4. Update group total savings
-    await prisma.groupSaving.update({
+    
+     const deposits = await prisma.groupDeposit.aggregate({
+                where:{group_id:id},
+                _sum:{amount:true},
+            });
+    
+            const withdrawals = await prisma.groupWithdrawal.aggregate({
+                where:{group_id:id},
+                _sum:{amount:true},
+    
+            })
+
+     const dep = new Prisma.Decimal(deposits._sum.amount ?? 0);
+        const withdrw = new Prisma.Decimal(withdrawals._sum.amount ?? 0);
+
+
+        await prisma.groupSaving.update({
       where: { group_id: id },
       data: {
-        total_Savings: { decrement: amount },
+        total_Savings: dep,
+        current_total: dep.sub(withdrw),
       },
     });
 

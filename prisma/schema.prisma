@@ -14,6 +14,7 @@ enum LOANTYPE {
 enum LoanStatus{
   active
   completed
+  inactive
 }
 
 enum TransactionType {
@@ -23,8 +24,16 @@ enum TransactionType {
   CREATED
 }
 
+enum MemberStatus{
+  active
+  inactive
+}
 
-
+enum MemberRole{
+  Admin
+  User
+  CreditMember
+}
 enum SAVINGSTYPE {
   VOLUNTARY
   COMPULSARY
@@ -69,6 +78,10 @@ model Member {
   GroupDeposits GroupDeposit[]
   LoanTransaction LoanTransaction[]
   SavingsTransaction SavingsTransaction[]
+  Role MemberRole @default(User)
+  Status MemberStatus @default(active)
+  JoinedAt DateTime @default(now())
+
  
   GroupWithdrawal GroupWithdrawal[]
   groupSavingsTransactions GroupSavingsTransaction[]
@@ -136,7 +149,7 @@ model LoanTransaction {
   new_balance Decimal @db.Decimal(12,2) @default(0)
   amount Decimal @db.Decimal(12,2) @default(0)
   member_Id Int?
-  member Member? @relation(fields: [member_Id], references: [member_Id])
+  member Member? @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
 
   loan Loan @relation(fields: [loan_id], references: [loan_id])
 }
@@ -147,7 +160,7 @@ model SavingsTransaction {
   savings_id  Int
   saving    Savings  @relation(fields: [savings_id], references: [savings_id], onDelete: Cascade)
   member_Id Int?
-  member Member? @relation(fields: [member_Id], references: [member_Id])
+  member Member? @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   
   amount      Decimal @db.Decimal(12, 2)
   type        TransactionType
@@ -162,7 +175,7 @@ model GroupDeposit {
   member_Id    Int
   group_id     Int
 
-  member       Member     @relation(fields: [member_Id], references: [member_Id])
+  member       Member     @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   group        GroupSaving @relation(fields: [group_id], references: [group_id])
 }
 
@@ -173,7 +186,7 @@ model GroupWithdrawal {
   group_id      Int
   created_at    DateTime  @default(now())
 
-  member        Member      @relation(fields: [member_Id], references: [member_Id])
+  member        Member      @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   group         GroupSaving @relation(fields: [group_id], references: [group_id])
 }
 
@@ -182,7 +195,7 @@ model GroupSavingsTransaction {
   group_id  Int
   group    GroupSaving  @relation(fields: [group_id], references: [group_id], onDelete: Cascade)
   member_Id Int?
-  member        Member?      @relation(fields: [member_Id], references: [member_Id])
+  member        Member?      @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   
   amount      Decimal @db.Decimal(12, 2)
   type        TransactionType
