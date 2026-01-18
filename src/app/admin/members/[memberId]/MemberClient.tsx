@@ -176,7 +176,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
                    <td className="px-4 py-4 border">{s.total}</td>
                    <td className="px-4 py-4 border"> 
                                            <Link
-                    href={`/admin/Loans//transactions`}
+                    href={`/admin/savings/allSavings/${s.member_Id}/${s.savings_id}/`}
                     className="text-green-600"
                   >
                     View

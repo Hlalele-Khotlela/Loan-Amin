@@ -3,13 +3,17 @@ import { prisma } from "../../../lib/prisma/prisma";
 import { Prisma } from "@prisma/client";
 
 export async function POST() {
-  // Fetch all loans
+  // Fetch all Savings
   const savings = await prisma.savings.findMany();
+  
 
-  // Apply 1% interest to each loan
+  // Apply 0.05% interest to each loan
   for (const saving of savings) {
-    const intrestInrement = saving.total.mul(new Prisma.Decimal(0.01)); // balance × 1.02
+    const intrestInrement = saving.total.mul(new Prisma.Decimal(0.005));
+    const OwnerintrestInrement = saving.total.mul(new Prisma.Decimal(0.005)); // balance × 1.02
     const newBalance= saving.total.add(intrestInrement);
+    const newBalance2= saving.total.add(intrestInrement);
+
 
     await prisma.savings.update({
       where: { savings_id: saving.savings_id },
@@ -30,6 +34,28 @@ await prisma.savingsTransaction.create({
         type: "INTEREST",
     },
 });
+
+// Record owners Share
+
+await prisma.interest.create({
+  data:{
+    member_Id:saving.member_Id,
+    savings_id: saving.savings_id,
+    ownerShare: OwnerintrestInrement,
+    savings_type:saving.savings_type,
+  }
+});
+
+// Log Transaction
+
+await prisma.ownerTransaction.create({
+  data: {
+    savings_id: saving.savings_id,
+    amount: OwnerintrestInrement,
+    type: "OWNER_INTEREST",
+    Description: "Owner interest credited",
+  }
+})
 }
   return Response.json({ message: "Monthly interest applied manually" });
 }

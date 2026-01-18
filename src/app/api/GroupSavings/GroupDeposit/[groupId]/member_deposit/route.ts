@@ -19,16 +19,24 @@ export async function POST(req: Request,
             return NextResponse.json({ message: "Member ID is required" }, { status: 400 });
         }
 
-        
+        const group = await prisma.groupSaving.findUnique({
+            where:{group_id},
+            select:{min_amount: true}
+        })
+        if (!group){
+            return NextResponse.json({ message: "Group not found" }, { status: 404 });
+        }
+
+        if(amount< (group.min_amount)){
+            return NextResponse.json({message: "amount should be more than min amount"}, {status: 400})
+        }
 
         //create a new deposit record
         const deposit = await prisma.groupDeposit.create({
             data: {
                 amount,
                 member_Id: memberId,
-                group_id: group_id,
-
-             
+                group_id: group_id,          
                 
             },
         });

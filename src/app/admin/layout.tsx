@@ -1,8 +1,11 @@
 "use client";
+import { Toaster } from "react-hot-toast";
 import { AdminNav } from "@/components/admin-nav";
 import Link from "next/link";
+import adminTopBar from "@/components/adminTopBar";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
+    
      <div className="flex flex-col min-h-screen my-4"> 
      {/* 🔝 Top Menu */}
       
@@ -16,5 +19,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </div> 
                    </div>
                     </div>
+                   
+                    
   );
+  
 }

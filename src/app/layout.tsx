@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import Link from 'next/link';
 export const metadata: Metadata = {
-  title: 'LoanView',
+  title: 'Treasures Hunters',
   description: 'Your trusted partner in financial solutions.',
 };
 
@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <header className="flex items-center justify-between bg-gray-700 text-white px-6 py-3 shadow-md mt-3">
                  {/* Organisation Name */}
-                  <h1 className="text-xl font-bold tracking-wide">TREASUREs HUNTUERS</h1> 
+                  <h1 className="text-xl font-bold tracking-wide">TREASURES HUNTUERS</h1> 
                   <div className='float-left'>
                     <h2>welcome Admin</h2>
                   </div>

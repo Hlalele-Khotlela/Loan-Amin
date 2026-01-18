@@ -8,7 +8,7 @@ export async function POST() {
 
   // Apply 1% interest to each Savings
   for (const saving of groupsavings) {
-    const intrest = saving.total_Savings.mul(new Prisma.Decimal(0.01)); // balance × 0.01
+    const intrest = saving.total_Savings.mul(new Prisma.Decimal(0.005)); // balance × 0.01
     const newBalance= saving.total_Savings.add(intrest);
 
     await prisma.groupSaving.update({
@@ -19,6 +19,15 @@ export async function POST() {
         // totals: newBalance, // optional: keep totals in sync
       },
     });
+
+    await prisma.interest.create({
+  data:{
+    
+    group_id: saving.group_id,
+    ownerShare: intrest,
+    savings_type: "GROUP",
+  }
+});
   
 
 //   Record transaction

@@ -4,22 +4,21 @@ import {Prisma} from "@prisma/client";
 
 export async function POST(req: Request) {
     try {
-        const {savings_type, name, amount, member_Ids} = await req.json();
-    console.log("Received data:", {member_Ids, amount, savings_type});
+        const {savings_type, name, Minamount, member_Ids} = await req.json();
+    console.log("Received data:", {member_Ids, Minamount, savings_type});
 
     // Validate input
-    if (!member_Ids || !amount || !savings_type) {
+    if (!member_Ids || !Minamount || !savings_type) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }   
     // Create new savings record
     const interest = new Prisma.Decimal(0); // Initial interest is 0
-    const total = new Prisma.Decimal(amount).add(interest);
+    const total = new Prisma.Decimal(0);
+    const amount = new Prisma.Decimal(0);
 
     if(!name ||typeof name !== 'string' || !name.trim()){
         return NextResponse.json({ error: 'Invalid name' }, { status: 400 });
     }
-
-   
 
     const newSavings = await prisma.groupSaving.create({
         data: {
@@ -28,13 +27,12 @@ export async function POST(req: Request) {
            members:{
             connect: member_Ids.map((id: number) => ({member_Id: id })),
            },
-           amount: new Prisma.Decimal(amount),   
+           min_amount: new Prisma.Decimal(Minamount),   
            total_Savings: total,
            current_total: total,
+           amount:amount,
         //    interest: interest,   
-             
-           
-            
+    
         },
          include: {
                 members: true

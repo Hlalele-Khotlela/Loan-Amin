@@ -11,7 +11,7 @@ export default function CreateGroupSavingsPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const [groupName, setGroupName] = useState<string>("");
-  const [amount, setAmount] = useState<number>(0);
+  const [Minamount, setMinAmount] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -33,7 +33,7 @@ export default function CreateGroupSavingsPage() {
         body: JSON.stringify({
           name: groupName,
           savings_type: "GROUP",
-          amount: Number(amount),
+          Minamount: Number(Minamount),
           member_Ids: selectedMembers,
         }),
       });
@@ -42,7 +42,7 @@ export default function CreateGroupSavingsPage() {
         const data = await response.json();
         setMessage(`Group savings "${data.name}" created successfully!`);
         setGroupName("");
-        setAmount(0);
+        setMinAmount(0);
         setSelectedMembers([]);
       } else {
         setMessage("Failed to create group savings.");
@@ -81,12 +81,12 @@ export default function CreateGroupSavingsPage() {
           {/* Amount */}
           <div>
             <label className="block mb-2 font-semibold text-gray-700">
-              Initial Amount
+              Minimum Amount
             </label>
             <input
               type="number"
-              value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
+              value={Minamount}
+              onChange={(e) => setMinAmount(Number(e.target.value))}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="Enter initial amount"
               required

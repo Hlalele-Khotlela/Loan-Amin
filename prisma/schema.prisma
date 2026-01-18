@@ -17,6 +17,12 @@ enum LoanStatus{
   inactive
 }
 
+enum SavingStatus{
+  active
+  
+  inactive
+}
+
 enum TransactionType {
   DEPOSIT
   WITHDRAWAL
@@ -40,6 +46,7 @@ enum SAVINGSTYPE {
   SPECIAL
   PENSION
   SECURITY
+  GROUP
 }
 
 generator client {
@@ -74,9 +81,12 @@ model Member {
   loanrequest loanrequest[]
   loan  Loan[]
   savings Savings[]
+  shares Shares[]
+  OwnerTransaction OwnerTransaction[]
   groupSavings GroupSaving[] @relation("GroupMembership")
   GroupDeposits GroupDeposit[]
   LoanTransaction LoanTransaction[]
+  LoanIntestTransaction LoanIntestTransaction[]
   SavingsTransaction SavingsTransaction[]
   Role MemberRole @default(User)
   Status MemberStatus @default(active)
@@ -88,7 +98,7 @@ model Member {
 }
 
 model Loan {
-  
+
   Principal  Decimal @db.Decimal(12, 2)
   instalments Decimal @db.Decimal(12, 2)
   intrests Decimal @db.Decimal(12, 2)
@@ -107,6 +117,8 @@ model Loan {
   collectralName2 String
   collectralName3 String
   Loan_Duration Int
+  LoanInterest LoanInterest[]
+  LoanIntestTransaction LoanIntestTransaction[]
   MinInstament Decimal @db.Decimal(12,2)
 
 
@@ -124,7 +136,6 @@ model GroupSaving{
   current_total  Decimal    @db.Decimal(12, 2) @default(0)
   min_amount  Decimal @db.Decimal(12, 2) @default(0)
  
-
    members      Member[]  @relation("GroupMembership")
    transactions  GroupSavingsTransaction[]
 }
@@ -133,12 +144,14 @@ model Savings{
   min_amount  Decimal @db.Decimal(12, 2) @default(0)
   amount  Decimal @db.Decimal(12, 2)
   total  Decimal @db.Decimal(12, 2) @default(0)
-  
+  status SavingStatus @default(active)
   interest Decimal @db.Decimal(12, 2)
   savings_id Int @id @default(autoincrement())
   savings_type SAVINGSTYPE
   started_at  DateTime @default(now())
   member_Id Int
+  OwnerTransaction OwnerTransaction[]
+  Owner_Interest Interest [] 
   transactions  SavingsTransaction[]
 }
 model LoanTransaction {
@@ -167,16 +180,71 @@ model SavingsTransaction {
   created_at  DateTime @default(now())
 }
 
+model OwnerTransaction {
+  id          Int      @id @default(autoincrement())
+  savings_id  Int
+  saving    Savings  @relation(fields: [savings_id], references: [savings_id], onDelete: Cascade)
+  member_Id Int?
+  member Member? @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
+  
+  amount      Decimal @db.Decimal(12, 2)
+  type        String
+  Description        String
+  created_at  DateTime @default(now())
+}
+
+model LoanIntestTransaction {
+  id          Int      @id @default(autoincrement())
+  loan_id  Int
+  loan    Loan  @relation(fields: [loan_id], references: [loan_id], onDelete: Cascade)
+  member_Id Int?
+  member Member? @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
+  
+  amount      Decimal @db.Decimal(12, 2)
+  type        String
+  Description        String
+  created_at  DateTime @default(now())
+}
+
 model GroupDeposit {
   deposit_id   Int        @id @default(autoincrement())
   amount       Decimal    @db.Decimal(12, 2)
   deposited_at DateTime   @default(now())
-
   member_Id    Int
   group_id     Int
 
   member       Member     @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   group        GroupSaving @relation(fields: [group_id], references: [group_id])
+}
+
+model Interest{
+  id Int @id @default(autoincrement())
+  member_Id Int?
+  group_id Int?
+  savings_id Int?
+  ownerShare Decimal @db.Decimal(12, 2)
+  savings_type SAVINGSTYPE
+  created_at  DateTime @default(now())
+
+  savings Savings? @relation(fields: [savings_id], references: [savings_id])
+
+}
+
+model LoanInterest{
+  id Int @id @default(autoincrement())
+  member_Id Int
+  loan_type LOANTYPE
+  loan_id Int?
+  created_at  DateTime @default(now())
+  ownerShare Decimal @db.Decimal(12, 2)
+  loan Loan? @relation(fields: [loan_id], references: [loan_id])
+
+}
+model Shares{
+  id Int @id @default(autoincrement())
+  member_Id Int
+  amount Decimal @db.Decimal(12, 2)
+  member       Member     @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
 }
 
 model GroupWithdrawal {

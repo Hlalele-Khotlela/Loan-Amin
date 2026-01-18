@@ -93,5 +93,13 @@ export async function PUT(req: Request, context: {params: Promise<{id: string}>}
       totals_payeable: totalpayeable,
     },
   });
+
+  await prisma.loanInterest.updateMany({
+    where:{loan_id:updated.loan_id},
+    data:{
+      ownerShare:totalInt,
+
+    }
+  })
   return NextResponse.json(updated);
 }

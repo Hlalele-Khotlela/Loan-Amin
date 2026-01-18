@@ -4,11 +4,15 @@ import { Prisma } from "@prisma/client";
 
 export async function POST() {
   // Fetch all loans
-  const loans = await prisma.loan.findMany();
+  const loans = await prisma.loan.findMany({
+    where:{
+      status: "active",
+    }
+  });
 
-  // Apply 2% interest to each loan
+  // Apply 1% interest to each loan
   for (const loan of loans) {
-    const intrest = loan.balance.mul(new Prisma.Decimal(0.02)); // balance × 1.02
+    const intrest = loan.balance.mul(new Prisma.Decimal(0.01)); // balance × 1.02
     const newBalance= loan.balance.add(intrest);
 
     await prisma.loan.update({
@@ -19,8 +23,7 @@ export async function POST() {
         // totals: newBalance, // optional: keep totals in sync
       },
     });
-  
-
+ 
 //   Record transaction
 
 await prisma.loanTransaction.create({
@@ -32,6 +35,15 @@ await prisma.loanTransaction.create({
         
     },
 });
+
+await prisma.loanInterest.create({
+  data:{
+    loan_id: loan.loan_id,
+    member_Id:loan.member_Id,
+    ownerShare: intrest,
+    loan_type:loan.loan_type
+  }
+})
 }
   return Response.json({ message: "Monthly interest applied manually" });
 }

@@ -2,6 +2,7 @@ import GroupTransactions from "@/components/grouptrans";
 import GroupSummary from "../../../../../components/GroupSummary";
 import GroupMembersList from "../../../../../components/GroupMembersList";
 import RecentActivity from "../../../../../components/RecentActivity";
+import GroupClient from "./groupCient";
 // import { useRouter } from "next/navigation";
 
 
@@ -14,26 +15,20 @@ const res = await fetch(new URL(`/api/GroupSavings/${groupId}`, baseUrl), {
         cache: "no-store", });
 
   const group = await res.json();
-  // const router = useRouter();
-//   console.log("STATUS:", res.status);
-// console.log("RAW:", await res.text());
+  const members = await fetch (new URL(`/api/Member`, baseUrl), {
+    cache: "no-store",
+  })
 
-//   console.log("PARAMS:", await PageProps.params);
+const allMembers = await members.json();
+
 
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold">Group Dashboard</h1>
-        <p className="text-gray-600">Overview of group activities and members.</p>
-      </div>
-
-     
+    <GroupClient group={group} 
+    groupId={groupId} 
+    members={allMembers }
+    // onUpdateGroup={()=> {}}
+    />
+  )
     
-      <GroupSummary group={group} />
-      <GroupMembersList members={group.members} />
-      <RecentActivity deposits={group.deposits} withdrawals={group.withdrawals} />
-      <GroupTransactions groupId={Number(groupId)} />
-    </div>
-  );
 }
