@@ -17,6 +17,12 @@ export async function GET() {
         totalMemberInterest: data.combinedInterestByMember,
         nonMoveableAssets: data.NonMoveableownerSavingsEarnings,
         nonMoveableAssetByMember: data.NonMoveableInterestByMember,
+        memberTotalImoveable: data.memberTotalImoveable,
+        Income:data.Incomes,
+        expenses: data.Expenses,
+        profits:data.profit,
+        emegencyFundBalance: data.emegencyFundBalance,
+        totalEarnings: data.totalOwnerEarnings,
     
 
     }

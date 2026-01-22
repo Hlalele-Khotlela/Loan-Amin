@@ -43,7 +43,7 @@ await prisma.loanInterest.create({
     ownerShare: intrest,
     loan_type:loan.loan_type
   }
-})
+});
 }
   return Response.json({ message: "Monthly interest applied manually" });
 }

@@ -1,11 +1,21 @@
 import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import type { Loan } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/client";
 
- interface LoanModalProps { 
-    isOpen: boolean;
-     loan: Loan | null; 
-     onClose: () => void; }
+ interface LoanModalProps {
+  loan: {
+    loan_id: number| null;
+    member_Id: number|null;
+    Principal: Decimal |null;
+    balance: Decimal | null;
+    totals_payeable: Decimal| null;
+    
+    loan_type: string;
+  };
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 export function PaymentModal({ isOpen, loan, onClose }: LoanModalProps) {
     const [paymentAmount, setPaymentAmount] = useState("");
@@ -20,7 +30,7 @@ export function PaymentModal({ isOpen, loan, onClose }: LoanModalProps) {
         <p><strong>Loan ID:</strong> {loan.loan_id}</p>
         <p><strong>Name:</strong> {loan.member_Id}</p>
         <p><strong>Loan Type:</strong> {loan.loan_type}</p>
-        <p><strong>Balance:</strong> {loan.balance.toString()}</p>
+        <p><strong>Balance:</strong> {loan.balance?.toString() ?? 0}</p>
 
         {/* Example payment form */}
         <input

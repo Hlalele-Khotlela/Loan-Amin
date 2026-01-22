@@ -63,10 +63,20 @@ export async function POST(req: Request) {
       firstName,
       lastName,
       email,
-      gender
-      ,phone,
+      gender,
+      phone,
       member_Id: parseInt(member_Id, 10),
     },
+   });
+
+   await prisma.shareOnCapital.create({
+    data:{
+      member_Id: member.member_Id,
+      amount:4000,
+      Current_interest:0,
+      Accumu_interest: 0,
+      balance: 4000,
+    }
    });
 
  

@@ -5,21 +5,27 @@ export default function InterestDashboard() {
   const [combined, setCombined] = useState<any[]>([]);
   const [savings, setSavings] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
-  const [totals, setTotals] = useState<{ totalOwnerEarnings: number; ownerSavingsEarnings: number; ownerLoanEarnings: number } | null>(null);
+  const [totals, setTotals] = useState<{ totalOwnerEarnings: number; ownerSavingsEarnings: number; ownerLoanEarnings: number; expenses:number; profits:number; } | null>(null);
   const [activeTab, setActiveTab] = useState<"combined" | "savings" | "groups">("combined");
+  const [imoveableData, setImoveableData] = useState<any[]>([]);
+  const [shares, setshares] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       const res = await fetch("/api/Owner/Earnings");
       const json = await res.json();
       setCombined(json.totalMemberInterest ?? []);
-      setSavings(json.nonMoveableAssetByMember ?? []);
+      // setSavings(json.nonMoveableAssetByMember ?? []);
       setGroups(json.groupIntrest ?? []);
       setTotals({
-        totalOwnerEarnings: json.totalOwnerEarnings,
+        totalOwnerEarnings: json.totalEarnings,
         ownerSavingsEarnings: json.ownerSavingsEarnings,
         ownerLoanEarnings: json.ownerLoanEarnings,
+        expenses:json.expenses,
+        profits:json.profits,
       });
+      setImoveableData(json.memberTotalImoveable ?? []);
+      setshares(json.memberShares ?? []);
     }
     fetchData();
   }, []);
@@ -60,10 +66,10 @@ export default function InterestDashboard() {
             </tr>
           </thead>
           <tbody>
-            {savings.map((s) => (
+            {imoveableData.map((s) => (
               <tr key={s.member_Id} className="hover:bg-gray-50">
                 <td className="px-4 py-2 border text-center">{s.member_Id}</td>
-                <td className="px-4 py-2 border text-right">{Number(s._sum.ownerShare).toFixed(2)}</td>
+                <td className="px-4 py-2 border text-right">{s.TotalImoveable}</td>
               </tr>
             ))}
           </tbody>
@@ -98,19 +104,29 @@ export default function InterestDashboard() {
       {/* Summary Header */}
       {totals && (
         <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-2"> Earnings Summary</h2>
+          <h2 className="text-xl font-bold mb-2"> BreakDowns</h2>
           <div className="flex gap-8">
             <div>
-              <p className="text-gray-600">Total Earnings</p>
+              <p className="text-gray-600">Total Incomes</p>
               <p className="text-lg font-semibold">{totals.totalOwnerEarnings}</p>
             </div>
             <div>
-              <p className="text-gray-600">Savings Earnings</p>
+              <p className="text-gray-600">Savings Interests</p>
               <p className="text-lg font-semibold">{totals.ownerSavingsEarnings}</p>
             </div>
             <div>
-              <p className="text-gray-600">Loan Earnings</p>
+              <p className="text-gray-600">Loan Interests</p>
               <p className="text-lg font-semibold">{totals.ownerLoanEarnings}</p>
+            </div>
+
+            <div>
+              <p className="text-gray-600">Total Expenses</p>
+              <p className="text-lg font-semibold">{totals.expenses}</p>
+            </div>
+
+            <div>
+              <p className="text-gray-600">Suplus</p>
+              <p className="text-lg font-semibold">{totals.profits}</p>
             </div>
           </div>
         </div>

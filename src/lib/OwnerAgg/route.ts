@@ -42,10 +42,59 @@ export async function aggregateOwnerEarnings() {
     },
     
   });
+// Incomes
+  const incomes = await prisma.incomes.aggregate({
+    _sum:{amount: true}
+  });
+
+  const cooporateIncome= new Prisma.Decimal(incomes._sum.amount ?? 0);
+
+  // Emergency Fund
+
+  const emergencyDepositAndWith = await prisma.emegencyFund.aggregate({
+    _sum:{deposit:true,
+      withdrawals:true
+
+    }
+  });
+  const emegecyDep = new Prisma.Decimal(emergencyDepositAndWith._sum.deposit?? 0);
+  const emegencyWit = new Prisma.Decimal(emergencyDepositAndWith._sum.withdrawals?? 0);
+  
+  const emegencyBalance = emegecyDep.sub(emegencyWit);
   
 
   // Total owner earnings
-  const totalOwnerEarnings = ownerSavingsEarnings.add(ownerLoanEarnings);
+  const totalOwnerEarnings = cooporateIncome.add(emegencyBalance);
+
+  // Expenses
+
+  const expenses = await prisma.expenses.aggregate({
+    _sum:{amount:true}
+  });
+
+  const cooporateExp= new Prisma.Decimal(expenses._sum.amount ?? 0);
+
+  // calculate profit
+
+  const profit = totalOwnerEarnings.sub(cooporateExp);
+
+
+  // calculate share on capital interest
+  const shareOnCapitalIntrest = await prisma.shareOnCapital.aggregate({
+    _sum:{
+      Accumu_interest:true,
+    }
+  });
+  const totalShareCapital = new Prisma.Decimal(shareOnCapitalIntrest._sum.Accumu_interest?? 0);
+
+  // Share on Capital Per Members
+
+  const MembershareOnCapitalIntrest = await prisma.shareOnCapital.groupBy({
+    by:["member_Id"],
+    _sum: {Accumu_interest:true},
+  });
+
+ 
 
 
 
@@ -101,8 +150,9 @@ const nonMoveablesavingsInterest = await prisma.interest.aggregate({
   },
   _sum: { ownerShare: true },
 });
-const NonMoveableownerSavingsEarnings = new Prisma.Decimal(savingsInterest._sum.ownerShare ?? 0);
 
+const NonMoveableownerSavingsEarnings = new Prisma.Decimal(nonMoveablesavingsInterest._sum.ownerShare ?? 0);
+const  TotalImoveable = NonMoveableownerSavingsEarnings.add(totalShareCapital);
 // Earnings per Member (only 3 types)
 const NonMoveableInterestByMember = await prisma.interest.groupBy({
   by: ["member_Id"],
@@ -120,17 +170,46 @@ console.log("LoanInterestByMember:", loanInterestByMember);
 console.log("Combined:", combinedInterestByMember);
 
 
+const MemberTotalImoveable = NonMoveableInterestByMember.map((s)=>{
+  const shares = MembershareOnCapitalIntrest.find((mc)=> s.member_Id=== mc.member_Id);
+  return{
+    member_Id: s.member_Id,
+    memberIntrest: Number(s._sum.ownerShare ?? 0),
+    membersharesInterest: Number(shares?._sum.Accumu_interest?? 0),
+    TotalImoveable: Number(s._sum.ownerShare?? 0 )+ Number(shares?._sum.Accumu_interest?? 0),
+  };
+});
+
+MembershareOnCapitalIntrest.forEach((m) => {
+  if(!MemberTotalImoveable.find((c) => c.member_Id === m.member_Id)){
+    MemberTotalImoveable.push({
+      member_Id:m.member_Id,
+       memberIntrest: 0,
+    membersharesInterest: Number(m._sum.Accumu_interest?? 0),
+    TotalImoveable: Number(m._sum.Accumu_interest?? 0 )
+    })
+  }
+})
+
 
   return {
+    profit: Number(profit),
      totalOwnerEarnings: Number(totalOwnerEarnings),
     ownerSavingsEarnings : Number(ownerSavingsEarnings),
     ownerLoanEarnings: Number(ownerLoanEarnings),
     IntrestByGroup,
+    TotalImoveable,
+    emegencyFundBalance: Number(emegencyBalance),
+    MembershareOnCapitalIntrest,
     InterestByMember,
     loanInterestByMember,
     NonMoveableInterestByMember,
     NonMoveableownerSavingsEarnings,
     combinedInterestByMember,
+    Expenses: Number(cooporateExp),
+    Incomes: Number(cooporateIncome),
+    memberTotalImoveable: MemberTotalImoveable,
+  
   };
    
 }

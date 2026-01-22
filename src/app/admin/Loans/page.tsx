@@ -1,184 +1,223 @@
 "use client";
-import React from 'react';
-import { AdminNav } from '@/components/admin-nav';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { FormField } from '@/components/ui/form';
-import { toast } from '@/hooks/use-toast';
-// import { Link } from 'lucide-react';
-import { Form } from "@/components/ui/form";
-import { useRouter } from 'next/navigation';
-import { z } from 'zod';
-import { useForm } from "react-hook-form";
+
 import { useEffect, useState } from "react";
-import {  LoanStatus, LOANTYPE } from "@prisma/client";
-import { Decimal } from "decimal.js";
-import Link from 'next/link';
+import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PaymentModal } from "@/components/loan-modal";
-import LoanActions  from "@/components/Loan-acts";
-
-
-interface Loan {
-  totals_payeable: Decimal;
-  collectral: string;
-  collectralName3: string;
-  collectralName2: string;
-  collectralName1: string;
-  MinInstament: Decimal;
-  loan_id: number; 
-  member_Id: number;
-  created_at: Date;
-  Principal: Decimal;
-  instalments: Decimal;
-  intrests: Decimal; 
-  loan_type: LOANTYPE; 
-  totals: Decimal;
-   balance: Decimal; 
-  request_id: number;
-  status: LoanStatus ;
-  Loan_Duration: number;
-  
-}
+import LoanActions from "@/components/Loan-acts";
+import { useAuth } from "@/hooks/useAuth";
+import { Decimal } from "@prisma/client/runtime/client";
+import { LOANTYPE } from "@prisma/client";
 
 export default function LoansPage() {
-    const router = useRouter();
-    //  const loanRequests = fetchLoanRequests();
-    const [Loan, setLoan] = useState<Loan[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [status, setStatus] = useState<{[id: string]: string}>({});
-    const [selectedType, setSelectedType] = useState("all");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [debouncedSearch, setDebouncedSearch] = useState("");
-    const [page, setPage] = useState(15);
-    const [limit] = useState(10);
-    const [totalPages, setTotalPages] = useState(1);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
+
+  interface Loan {
+  loan_id: number;
+  member_Id: number;
+  Principal: Decimal;
+  intrests: Decimal;
+  loan_type: LOANTYPE;
+  totals_payeable: Decimal;
+  balance: Decimal;
+}
+
+  const { user, loading: authLoading } = useAuth("Admin");
+
+  const [loans, setLoans] = useState<Loan[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [selectedType, setSelectedType] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
 
-    useEffect(()=>{
-      const fetchLoans = async ()=> {
-        // search
-        const params = new URLSearchParams();
-       params.append("page", page.toString());
-       params.append("limit", limit.toString());
+  // Debounce search
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedSearch(searchTerm), 400);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
-       if (selectedType && selectedType !== "all") {
-         params.append("selectedType", selectedType);
-       }
+  // Fetch loans
+  useEffect(() => {
+    async function fetchLoans() {
+      setLoading(true);
 
-       if (debouncedSearch.trim() !== "") {
-        params.append("search", debouncedSearch);
-      }
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
 
-      const res= await fetch(`/api/loans?${params.toString()}`);
-      const data= await res.json();
-      console.log("Api response: ", data);
+      if (selectedType !== "all") params.append("selectedType", selectedType);
+      if (debouncedSearch.trim() !== "") params.append("search", debouncedSearch);
 
+      const res = await fetch(`/api/loans?${params.toString()}`);
+      const data = await res.json();
 
+      const list = data.data ?? data.loan ?? (Array.isArray(data) ? data : []);
+      setLoans(list);
+      setTotalPages(Math.ceil((data.totalCount ?? list.length) / limit));
 
+      setLoading(false);
+    }
 
-       setTotalPages(data.pagination?.totalPages ?? 1);
-       setTotalPages(Math.ceil(data.totalCount / limit));
-       setLoan(Array.isArray(data.data) ? data.data : [])
+    fetchLoans();
+  }, [page, selectedType, debouncedSearch]);
 
-       if(Array.isArray(data.data)){
-        setLoan(data.data);
-       }
-       else if(Array.isArray(data.loan)){
-        setLoan(data.loan);
-       }else if(Array.isArray(data)){
-        setLoan(data);
-       }
-       else{
-        setLoan(Array.isArray(data) ? data :[]);
-       }
+  if (authLoading) return <p>Loading...</p>;
 
-    };
-    fetchLoans()
-  },  [page, selectedType, debouncedSearch]);
-    
   return (
-    <div className='flex gap-6'>    
-        
-        <div className="flex-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Loans</CardTitle>
-              <CardDescription>See all loans and their details</CardDescription>
-              
-               <LoanActions />
-            </CardHeader>
-            <CardContent>
-              {/* Loan content goes here */}
-              <table className="w-full table-auto border-collapse border border-slate-400">
-                <thead>
-                  <tr>
-                    <th className="border border-slate-300 px-4 py-2">Loan ID</th>
-                    <th className="border border-slate-300 px-4 py-2">Pass#</th>
-                    <th className="border border-slate-300 px-4 py-2">Amount</th>
-                    
-                    <th className="border border-slate-300 px-4 py-2">Interests</th>
-                    <th className="border border-slate-300 px-4 py-2">Loan Type</th>
-                    <th className="border border-slate-300 px-4 py-2">Total</th>
-                    <th className="border border-slate-300 px-4 py-2">Balance</th>
-                    <th className="border border-slate-300 px-4 py-2">Make Payent</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {Loan.map((request: any)=>(
-                  <tr key={request.loan_id} className="border-b">
-                    <td className="py-2 "><Link href={`/admin/Loans/${request.member_Id}/${request.loan_id}/transactions`}>{request.loan_id}</Link>
-                      </td>
-                    <td className="py-2">
-                      <Link href={`/admin/Loans/${request.member_Id}`}>
-                    {request.member_Id}
-                    </Link></td>
-                    <td className="py-2">{request.Principal}</td>
-                  
-                    <td className="py-2">{request.intrests}</td>
-                    <td className="py-2">{request.loan_type}</td>
-                    <td className="py-2">{request.totals_payeable}</td>
-                    <td className="py-2">{request.balance}</td>
-                    <td className="py-2">
-                      <button
-  type="button"
-  className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-  onClick={() => {
-    setSelectedLoan(request);
-    setIsModalOpen(true);
-  }}
->
-  Pay
-  
-</button>
+    <div className="flex gap-6">
+      <div className="flex-1">
+        <Card>
+          <CardHeader>
+            <CardTitle>Loans</CardTitle>
+            <CardDescription>See all loans and their details</CardDescription>
+            <LoanActions />
+          </CardHeader>
 
- 
-</td>
+          <CardContent>
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="Search by member ID or loan ID..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border p-2 rounded w-full sm:w-1/3"
+              />
 
-                    
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="border p-2 rounded w-full sm:w-1/4"
+              >
+                <option value="all">All Types</option>
+                <option value="SHORT_TERM">Short Term</option>
+                <option value="LONG_TERM">Long Term</option>
+                <option value="EMERGENCY">Emergency</option>
+              </select>
 
-                  </tr>
-                ))}
+              <button
+                onClick={() => {
+                  setSelectedType("all");
+                  setSearchTerm("");
+                }}
+                className="border px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+              >
+                Reset
+              </button>
+            </div>
 
-        {/* {isModalOpen && selectedLoan && (
-  <PaymentModal 
-  isOpen={isModalOpen}
-  loan={selectedLoan}
-   onClose={() => setIsModalOpen(false)} />
-)} */}
-                
-                </tbody>    
+            {/* Table */}
+            {loading ? (
+              <LoanSkeleton />
+            ) : (
+              <div className="overflow-x-auto rounded-lg border">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border px-4 py-2">Loan ID</th>
+                      <th className="border px-4 py-2">Pass#</th>
+                      <th className="border px-4 py-2">Amount</th>
+                      <th className="border px-4 py-2">Interests</th>
+                      <th className="border px-4 py-2">Loan Type</th>
+                      <th className="border px-4 py-2">Total</th>
+                      <th className="border px-4 py-2">Balance</th>
+                      <th className="border px-4 py-2">Payment</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {loans.map((loan) => (
+                      <tr key={loan.loan_id} className="border-b">
+                        <td className="px-4 py-2">
+                          <Link href={`/admin/Loans/${loan.member_Id}/${loan.loan_id}/transactions`}>
+                            {loan.loan_id}
+                          </Link>
+                        </td>
+
+                        <td className="px-4 py-2">
+                          <Link href={`/admin/Loans/${loan.member_Id}`}>
+                            {loan.member_Id}
+                          </Link>
+                        </td>
+
+                        <td className="px-4 py-2">{loan.Principal.toString()}</td>
+                        <td className="px-4 py-2">{loan.intrests.toString()}</td>
+                        <td className="px-4 py-2">{loan.loan_type.toString()}</td>
+                        <td className="px-4 py-2">{loan.totals_payeable.toString()}</td>
+                        <td className="px-4 py-2">{loan.balance.toString()}</td>
+
+                        <td className="px-4 py-2">
+                          <button
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                            onClick={() => {
+                              setSelectedLoan(loan);
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            Pay
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
-                     {isModalOpen && selectedLoan && (
-  <PaymentModal 
-  isOpen={isModalOpen}
-  loan={selectedLoan}
-   onClose={() => setIsModalOpen(false)} />
-)}
-            </CardContent>
-          </Card>
-        </div>
-    </div>
-    );
+              </div>
+            )}
 
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-4">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+                className="px-4 py-2 border rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+
+              <span className="font-medium">
+                Page {page} of {totalPages}
+              </span>
+
+              <button
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+                className="px-4 py-2 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+
+            {/* Modal */}
+            {isModalOpen && selectedLoan && (
+              <PaymentModal
+                isOpen={isModalOpen}
+                loan={selectedLoan}
+                onClose={() => setIsModalOpen(false)}
+              />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function LoanSkeleton() {
+  return (
+    <div className="animate-pulse space-y-3">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="h-6 bg-gray-300 rounded"></div>
+      ))}
+    </div>
+  );
 }

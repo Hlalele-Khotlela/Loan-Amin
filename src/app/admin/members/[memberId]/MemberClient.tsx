@@ -3,8 +3,7 @@
 
 import { useState } from "react";
 import { MemberModal } from "@/components/memberEditModal";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { getMemberDashboardData } from "../../../../lib/memberAgg/route";
+
 
 import Link from "next/link";
 // import { LoanDetails } from "./LoanDetails";
@@ -40,6 +39,17 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
         </h1>
 
         <div className="flex gap-3">
+
+           <button
+                  onClick={() => {
+                    setSelectedMember(member);
+                    setMode("edit");
+                  }}
+                  className="px-2 py-1 bg-blue-500 text-white rounded"
+                >
+                  Edit 
+                </button>
+
            <button
                   onClick={() => {
                     setSelectedMember(member);
@@ -286,4 +296,3 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
 }
      
   
-
