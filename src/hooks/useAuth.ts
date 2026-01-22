@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+
 
 export function useAuth(requiredRole?: string) {
   const router = useRouter();
@@ -9,9 +11,12 @@ export function useAuth(requiredRole?: string) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get("token");
+
+
     if (!token) {
-      router.push("/login");
+      setLoading(false);
+      if (requiredRole) router.push("/login");
       return;
     }
 
@@ -20,6 +25,7 @@ export function useAuth(requiredRole?: string) {
 
       // Role check
       if (requiredRole && payload.role !== requiredRole) {
+        setLoading(false);
         router.push("/unauthorized");
         return;
       }
@@ -27,6 +33,8 @@ export function useAuth(requiredRole?: string) {
       setUser(payload);
       setLoading(false);
     } catch (err) {
+      localStorage.removeItem("token");
+      setLoading(false);
       router.push("/login");
     }
   }, []);

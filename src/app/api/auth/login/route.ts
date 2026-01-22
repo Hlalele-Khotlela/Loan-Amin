@@ -14,14 +14,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Create JWT
     const token = jwt.sign(
-      { id: member.member_Id, email: member.email , role: member.Role},
+      { id: member.member_Id, email: member.email, role: member.Role },
       process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
 
-    return NextResponse.json({ token, member });
+    const response = NextResponse.json({ success: true, member });
+
+    // 🔥 The ONLY cookie format Firefox + Next.js 16 accepts in dev mode
+    response.headers.set(
+      "Set-Cookie",
+      `token=${token}; Path=/; Max-Age=3600`
+    );
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

@@ -1,38 +1,65 @@
 "use client";
+
 import UserProfile from "./client";
-import {UserInfo} from"@/types/userType";
+import { UserInfo } from "@/types/userType";
 import { useEffect, useState } from "react";
-
-
+import Cookies from "js-cookie";
 
 export default function UserProfilePage() {
   const [user, setUser] = useState<UserInfo | null>(null);
 
+  // Safe JWT decoder
+  function decodeJWT(token: string) {
+    try {
+      if (!token || !token.includes(".")) return null;
+
+      const parts = token.split(".");
+      if (parts.length < 2) return null;
+
+      const base64 = parts[1]
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+      const padded = base64.padEnd(
+        base64.length + (4 - (base64.length % 4)) % 4,
+        "="
+      );
+
+      return JSON.parse(atob(padded));
+    } catch {
+      return null;
+    }
+  }
+
   useEffect(() => {
     async function fetchUser() {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+      const token = Cookies.get("token");
+      if (!token) {
+        console.warn("No token found");
+        return;
+      }
 
-      // decode token to get memberId
-      const payload = JSON.parse(atob(token.split(".")[1]));
+      const payload = decodeJWT(token);
+      if (!payload) {
+        console.error("Invalid or malformed token");
+        return;
+      }
+
       const memberId = payload.id;
-      // console.log("Frontend calling:", `/api/user/${memberId}`);
 
-      
-       fetch(`/api/user/${memberId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(async(res)=>{
-        if (!res.ok){
-          console.log("Unauthorized or forbidden:", await res.json());
+      try {
+        const res = await fetch(`/api/user/${memberId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-          return null;
+        if (!res.ok) {
+          console.error("Unauthorized or forbidden:", await res.json());
+          return;
         }
-        return res.json()
-      })
-      .then((data)=> {
-        if(data)
-           setUser({
+
+        const data = await res.json();
+
+        setUser({
           firstName: data.firstName,
           lastName: data.lastName,
           status: data.status,
@@ -40,15 +67,13 @@ export default function UserProfilePage() {
           member_Id: data.member_Id,
           Phone: data.phone,
         });
+
         console.log("API returned:", data);
-
-      })
-
-      
-        
-       
-      
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
     }
+
     fetchUser();
   }, []);
 
@@ -56,8 +81,7 @@ export default function UserProfilePage() {
 
   return (
     <div>
-       <UserProfile {...user}/>
+      <UserProfile {...user} />
     </div>
-   
   );
 }

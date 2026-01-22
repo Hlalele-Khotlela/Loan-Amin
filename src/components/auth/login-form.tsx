@@ -14,6 +14,7 @@ export default function LoginPage() {
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, memberId }),
     });
@@ -25,7 +26,7 @@ export default function LoginPage() {
     }
 
     // Save token
-    localStorage.setItem("token", data.token);
+    // localStorage.setItem("token", data.token);
 
     // Redirect to profile
     router.push(`/user/${data.member.member_Id}`);

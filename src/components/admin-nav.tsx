@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { Home, UserPlus, PiggyBank, FileSliders } from "lucide-react";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+
 
 export function AdminNav() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get("token");
+
     if (!token) return;
 
     try {
