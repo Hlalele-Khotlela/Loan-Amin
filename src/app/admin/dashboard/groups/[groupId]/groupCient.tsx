@@ -5,6 +5,8 @@ import GroupTransactions from "@/components/grouptrans";
 import GroupMembersList from "../../../../../components/GroupMembersList";
 import RecentActivity from "../../../../../components/RecentActivity";
 import GroupEditGroupModal from "@/components/GroupEditDelModal";
+import { usePermission } from "@/hooks/usePermission";
+
 
 type GroupClient={
     group: any,
@@ -15,6 +17,8 @@ type GroupClient={
 }
 export default function GroupClient({group, groupId, members,}: GroupClient){
 const [showModal, setShowModal] = useState(false);
+const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
+
 
 async function handleUpdateGroup(updatedGroup: any){
     await fetch(`/api/GroupSavings/${groupId}`,{
@@ -32,12 +36,13 @@ return(
         <h1 className="text-2xl font-bold">Group Dashboard</h1>
         <p className="text-gray-600">Overview of group activities and members.</p>
       </div>
+      {canApproveLoans && (
       <button
       onClick={() => setShowModal(true)}
       className="px-4 py-2 bg-blue-600 text-white rounded">
         Edit Group
       </button>
-
+      )}
       
 
       <GroupSummary group={group} />

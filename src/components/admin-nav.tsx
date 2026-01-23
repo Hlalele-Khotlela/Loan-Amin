@@ -22,7 +22,7 @@ export function AdminNav() {
     }
   }, []);
 
-  if (user?.role !== "Admin") {
+  if (!["CreditMember", "Admin"].includes(user?.role)) {
     return null; // hide menu for non-admins
   }
 

@@ -4,10 +4,12 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { SavingsDetails } from "./savingDetails";
 import { SavingsModal } from "@/components/SavingsEditDelModal";
+import { usePermission } from "@/hooks/usePermission";
 export default function SavingsClient({savings}: {savings:any}){
       const [selectedSaving, setSelectedSaving] = useState<any | null>(null);
       const [selectedSavingsId, setSelectedSavingsId] = useState<number | null>(null);
       const [mode, setMode] = useState<"edit" | "delete" | null>(null);
+      const { canManageStaff, canApproveLoans, canViewReports } = usePermission();
 
 async function handleConfirm(savings: any) {
           if(!selectedSavingsId) return;
@@ -48,6 +50,7 @@ async function handleConfirm(savings: any) {
       ):(
         <div className="space-y-4">
                     <div className="space-x-2">
+                      {canApproveLoans && (
                         <button
                           onClick={() => {
                             setSelectedSaving(savings);                            
@@ -59,6 +62,9 @@ async function handleConfirm(savings: any) {
                         >
                           Edit
                         </button>
+                        )}
+
+                        {canApproveLoans && (
                         <button
                           onClick={() => {
                             setSelectedSaving(savings);
@@ -69,6 +75,7 @@ async function handleConfirm(savings: any) {
                         >
                           Delete
                         </button>
+                        )}
                       </div>
                     <SavingsDetails savings={savings}/>
                   

@@ -1,4 +1,5 @@
-export type Role = "Admin" | "Staff" | "User";
+export type Role = "Admin" | "Staff" | "User"| "CreditMember";
+
 export const Permissions: Record<Role, {
   canViewAdminDashboard: boolean;
   canManageStaff: boolean;
@@ -24,6 +25,14 @@ export const Permissions: Record<Role, {
     canApproveLoans: false,
     canViewReports: true,
   },
+
+   CreditMember: { 
+    canViewAdminDashboard: true, 
+    canManageStaff: false, 
+    canViewSavings: true, 
+    canViewLoans: true, 
+    canApproveLoans: false, 
+    canViewReports: true, },
 
   User: {
     canViewAdminDashboard: false,

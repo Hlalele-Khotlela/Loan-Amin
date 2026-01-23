@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import TransactionModal from "@/components/EmegencyFundModal";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function TransactionTable() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [month, setMonth] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [months, setMonths] = useState<string[]>([]);
+  const { canManageStaff, canApproveLoans, canViewReports } = usePermission();
 
   async function fetchData(selectedMonth?: string) {
     const url = selectedMonth
@@ -19,6 +21,7 @@ export default function TransactionTable() {
        console.log("Fetching URL:", url);
     const res = await fetch(url, {cache:"no-store"});
     const json = await res.json();
+    
 
 
 
@@ -82,12 +85,14 @@ export default function TransactionTable() {
       </div>
 
       {/* Button to open modal */}
+      {canApproveLoans && (
       <button
         onClick={() => setIsModalOpen(true)}
         className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Add Deposit / Withdrawal
       </button>
+      )}
 
       {/* Modal */}
       <TransactionModal

@@ -8,6 +8,7 @@ import LoanActions from "@/components/Loan-acts";
 import { useAuth } from "@/hooks/useAuth";
 import { Decimal } from "@prisma/client/runtime/client";
 import { LOANTYPE } from "@prisma/client";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function LoansPage() {
 
@@ -21,7 +22,8 @@ export default function LoansPage() {
   balance: Decimal;
 }
 
-  const { user, loading: authLoading } = useAuth("Admin");
+  const { user, loading: authLoading } = useAuth(["Admin", "CreditMember"]);
+
 
   const [loans, setLoans] = useState<Loan[]>([]);
 
@@ -37,6 +39,8 @@ export default function LoansPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
+  const { canManageStaff, canApproveLoans, canViewReports } = usePermission();
+
 
 
   // Debounce search
@@ -80,7 +84,8 @@ export default function LoansPage() {
           <CardHeader>
             <CardTitle>Loans</CardTitle>
             <CardDescription>See all loans and their details</CardDescription>
-            <LoanActions />
+            {canApproveLoans && <LoanActions />}
+
           </CardHeader>
 
           <CardContent>
@@ -157,6 +162,7 @@ export default function LoansPage() {
                         <td className="px-4 py-2">{loan.balance.toString()}</td>
 
                         <td className="px-4 py-2">
+                          {canApproveLoans &&(
                           <button
                             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                             onClick={() => {
@@ -166,6 +172,7 @@ export default function LoansPage() {
                           >
                             Pay
                           </button>
+                          )}
                         </td>
                       </tr>
                     ))}

@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import ExpensesModal from "@/components/ExpensesModal";
+import { usePermission } from "@/hooks/usePermission";
+
 
 export default function ExpenseTable() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [months, setMonths] = useState<string[]>([]);
   const [month, setMonth] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
+
 
   async function fetchData(selectedMonth?: string) {
     const url = selectedMonth ? `/api/Expenses?month=${selectedMonth}` : "/api/Expenses";
@@ -53,12 +57,14 @@ export default function ExpenseTable() {
       </div>
 
       {/* Button to open modal */}
+      {canApproveLoans && (
       <button
         onClick={() => setIsModalOpen(true)}
         className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Add Expenses
       </button>
+      )}
 
       {/* Modal */}
       <ExpensesModal

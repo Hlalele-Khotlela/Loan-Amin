@@ -4,12 +4,19 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePermission } from "@/hooks/usePermission";
 import Cookies from "js-cookie";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+import { FloatingAdminButton } from "@/components/floatingButton";
+import { LoanApplicationModal } from "@/components/loan-application-form";
 
 export default function UserProfilePage({ member_Id }: { member_Id: number }) {
   const [member, setMember] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("Overview");
   const tabs = ["Overview", "Savings", "Loans", "Group Savings", "Recent Activity"];
   const { canViewSavings, canViewLoans, canManageStaff } = usePermission();
+  const { user } = useAuth();
+  const [openLoanModal, setOpenLoanModal] = useState(false);
+
 
   function buildActivityFeed(member: any) {
     const feed: any[] = [];
@@ -108,6 +115,8 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
       <Card>
         <CardContent>
           {/* Tabs */}
+
+<FloatingAdminButton/>
           <nav className="mb-6 flex gap-2 border-b pb-2">
             {tabs.map((tab) => (
               <button
@@ -120,8 +129,17 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
                 {tab}
               </button>
             ))}
-          </nav>
+            
 
+           </nav>
+          
+ <LoanApplicationModal 
+ isOpen={openLoanModal} 
+ onClose={() => 
+  setOpenLoanModal(false)}
+  memberId={member.member_Id}
+      />
+       
           {/* Overview */}
           {activeTab === "Overview" && (
             <div className="space-y-6">
@@ -145,12 +163,14 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Role</p>
-                    <p className="font-medium">{member.role ?? "Member"}</p>
+                    <p className="font-medium">{member.Role ?? "Member"}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Status</p>
                     <p className="font-medium">{member.status ?? "Active"}</p>
                   </div>
+
+      
                 </div>
               </div>
 
@@ -181,6 +201,12 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
                       0
                     )}
                   </p>
+                               <button onClick={() => setOpenLoanModal(true)}
+          className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Apply for Loan
+        </button>
+
                 </div>
                 <div className="rounded-2xl border p-4">
                   <p className="text-sm text-muted-foreground">Group Savings</p>
@@ -301,9 +327,16 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
                     </div>
                   </div>
                 ))}
+
+
               </div>
+
+              
             </div>
           )}
+
+   
+          
         </CardContent>
       </Card>
     </div>

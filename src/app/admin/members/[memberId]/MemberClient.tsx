@@ -3,6 +3,8 @@
 
 import { useState } from "react";
 import { MemberModal } from "@/components/memberEditModal";
+import { usePermission } from "@/hooks/usePermission";
+
 
 
 import Link from "next/link";
@@ -11,6 +13,8 @@ import Link from "next/link";
 export default function MemberClient({ member, dashboardData }: { member: any; dashboardData: any; }) {
   const [selectedMember, setSelectedMember] = useState<any | null>(null);
   const [mode, setMode] = useState<"edit" | "delete" | null>(null);
+  const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
+
 
  
 
@@ -40,16 +44,8 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
 
         <div className="flex gap-3">
 
-           <button
-                  onClick={() => {
-                    setSelectedMember(member);
-                    setMode("edit");
-                  }}
-                  className="px-2 py-1 bg-blue-500 text-white rounded"
-                >
-                  Edit 
-                </button>
-
+          
+{canApproveLoans && (
            <button
                   onClick={() => {
                     setSelectedMember(member);
@@ -59,7 +55,9 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
                 >
                   Edit
                 </button>
+)}
 
+{canApproveLoans && (
           <button
                   onClick={() => {
                     setSelectedMember(member);
@@ -69,6 +67,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
                 >
                   Delete
                 </button>
+                )}
         </div>
       </div>
 

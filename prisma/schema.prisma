@@ -72,6 +72,12 @@ model loanrequest {
   loan_type LOANTYPE  
   member_Id Int
   member    Member @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
+  collectral String
+  collectralName1 String
+  collectralName2 String
+  collectralName3 String
+  Loan_Duration Int
+ 
   
 }
 

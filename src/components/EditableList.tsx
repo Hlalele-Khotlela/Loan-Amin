@@ -16,6 +16,7 @@ export function EditableList<T>({
   onEdit,
   onDelete,
 }: EditableListProps<T>) {
+
   return (
     <ul className="space-y-2">
       {items.map((item) => (

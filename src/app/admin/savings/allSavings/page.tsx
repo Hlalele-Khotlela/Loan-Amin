@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import SavingsActions from "@/components/savins-acts";
 import { SavingsTransactionModal } from "@/components/SavingTransactionModal";
+import { usePermission } from "@/hooks/usePermission";
 
 type Savings = {
   savings_id: number;
@@ -17,6 +18,7 @@ type Savings = {
 };
 
 export default function SavingsTable() {
+  const { canManageStaff, canApproveLoans, canViewReports } = usePermission();
   const [savings, setSavings] = useState<Savings[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -98,7 +100,7 @@ export default function SavingsTable() {
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">Savings Accounts</h2>
 
-      <SavingsActions />
+      {canApproveLoans &&<SavingsActions />}
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mt-4 mb-4">
@@ -187,6 +189,7 @@ export default function SavingsTable() {
                   </td>
 
                   <td className="px-4 py-2 border">
+                    {canApproveLoans && (
                     <button
                       onClick={() => {
                         setSelectedSavingsId(s.savings_id);
@@ -196,7 +199,9 @@ export default function SavingsTable() {
                     >
                       Deposit
                     </button>
+                    )}
 
+                    {canApproveLoans && (
                     <button
                       onClick={() => {
                         setSelectedSavingsId(s.savings_id);
@@ -206,6 +211,8 @@ export default function SavingsTable() {
                     >
                       Withdraw
                     </button>
+                    )}
+                    
                   </td>
                 </tr>
               ))

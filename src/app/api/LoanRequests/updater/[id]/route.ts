@@ -25,17 +25,37 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
   const installment = new Prisma.Decimal(0);
   const balance = totalAmount.sub(installment);
 
+ 
+     const rate =new Prisma.Decimal("0.01");
+     
+ 
+     const loanDuration = Number(updated.Loan_Duration?? 0);
+     const totalInterest =amount.mul(rate).mul(loanDuration);
+ 
+   
+      
+     
+      const amountPayeable = amount.add(totalInterest);
+      const minInstallment= amountPayeable.dividedBy(loanDuration);
+
     const newLoan = await prisma.loan.create({
       data: {
-        request_id: updated.request_id,
-        amount: updated.amount,
-        name: updated.applicant ?? "",                          
-        intrests: intrest,
-        totals : totalAmount,
-        loan_type: updated.loan_type,
-        balance : balance,
-        instalments: installment,
         member_Id: updated.member_Id,
+      // name: body.name,
+      loan_type: updated.loan_type,
+      Loan_Duration: updated.Loan_Duration,
+      Principal: updated.amount,
+      
+      instalments: installment,
+      intrests: intrest,
+      totals_payeable: amountPayeable,
+      balance: balance,
+      status: "active",
+      collectral: updated.collectral,
+      collectralName1: updated.collectralName1,
+      collectralName2: updated.collectralName2,
+      collectralName3: updated.collectralName3,
+      MinInstament: minInstallment,
         
       }
     })
@@ -43,3 +63,5 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
 
   return NextResponse.json({updated, newLoan});
 }
+
+ 

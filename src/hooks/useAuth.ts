@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 
-export function useAuth(requiredRole?: string) {
+export function useAuth(allowedRoles?: string[]) {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ export function useAuth(requiredRole?: string) {
 
     if (!token) {
       setLoading(false);
-      if (requiredRole) router.push("/login");
+      if (allowedRoles) router.push("/login");
       return;
     }
 
@@ -24,7 +24,7 @@ export function useAuth(requiredRole?: string) {
       const payload = JSON.parse(atob(token.split(".")[1]));
 
       // Role check
-      if (requiredRole && payload.role !== requiredRole) {
+      if (allowedRoles && !allowedRoles.includes(payload.role )) {
         setLoading(false);
         router.push("/unauthorized");
         return;

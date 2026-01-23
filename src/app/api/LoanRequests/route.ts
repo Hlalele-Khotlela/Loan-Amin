@@ -17,10 +17,12 @@ export async function GET(req: Request) {
   
 
 
-  console.log("Received loan_types:", loan_type);
+ 
 
     try {
-      const where: any = {};
+      const where: any = {
+        status:"pending",
+      };
       if (loan_type && loan_type !== "all") {
         where.loan_type = {
           equals: loan_type,

@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import IncomeModal from "@/components/IncomeModal";
+import { usePermission } from "@/hooks/usePermission";
+
 
 export default function IncomeTable() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [months, setMonths] = useState<string[]>([]);
   const [month, setMonth] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
+
 
   async function fetchData(selectedMonth?: string) {
     const url = selectedMonth ? `/api/incomeExp?month=${selectedMonth}` : "/api/incomeExp";
@@ -53,13 +57,14 @@ export default function IncomeTable() {
       </div>
 
       {/* Button to open modal */}
+      {canApproveLoans && (
       <button
         onClick={() => setIsModalOpen(true)}
         className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Add Income
       </button>
-
+)}
       {/* Modal */}
       <IncomeModal
         isOpen={isModalOpen}

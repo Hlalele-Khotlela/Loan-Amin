@@ -11,7 +11,7 @@ export default function Home() {
           <div className="mx-auto mb-4">
             <Icons.logo className="h-16 w-16 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold">Welcome to LoanView</CardTitle>
+          <CardTitle className="text-3xl font-bold">Welcome to Treasures Huntures</CardTitle>
           <CardDescription className="pt-2">
             Your trusted partner in financial solutions.
             <br />
@@ -21,10 +21,10 @@ export default function Home() {
         <CardContent>
           <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
             <Button asChild className="flex-1" size="lg">
-              <Link href="/dashboard">User Portal</Link>
+              <Link href="/user/login">User Portal</Link>
             </Button>
             <Button asChild className="flex-1" variant="outline" size="lg">
-              <Link href="/admin/dashboard">Admin Portal</Link>
+              <Link href="/admin/login">Admin Portal</Link>
             </Button>
           </div>
         </CardContent>

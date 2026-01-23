@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+const allowedRoles = ["Admin", "Credit"];
 
 export function proxy(req: NextRequest) {
   const token =
@@ -21,7 +22,7 @@ export function proxy(req: NextRequest) {
 
     const role = payload.role;
 
-    if (path.startsWith("/admin") && role !== "Admin") {
+    if (path.startsWith("/admin") && !["Admin", "CreditMember"].includes(role)) {
       url.pathname = "/unauthorized";
       return NextResponse.redirect(url);
     }
@@ -31,7 +32,7 @@ export function proxy(req: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    if (path.startsWith("/user") && role !== "User" && role !== "Admin") {
+    if (path.startsWith("/user") && !["User", "CreditMember", "Admin"].includes(role)) {
       url.pathname = "/unauthorized";
       return NextResponse.redirect(url);
     }
