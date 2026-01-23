@@ -50,7 +50,7 @@ export default function SavingsTable() {
         limit: limit.toString(),
       });
 
-      if (selectedType !== "all") params.append("type", selectedType);
+      if (selectedType !== "all") params.append("selectedType", selectedType);
       if (debouncedSearch.trim() !== "") params.append("search", debouncedSearch);
 
       const res = await fetch(`/api/Savings/allSavings?${params.toString()}`);
@@ -118,9 +118,11 @@ export default function SavingsTable() {
           className="border p-2 rounded w-full sm:w-1/4"
         >
           <option value="all">All Types</option>
-          <option value="Fixed">Fixed</option>
-          <option value="Monthly">Monthly</option>
-          <option value="Emergency">Emergency</option>
+          <option value="SPECIAL">Special</option>
+          <option value="SECURITY">Security</option>
+          <option value="COMPULSARY">Compulsory</option>
+          <option value="Emergency">Voluntary</option>
+          <option value="PENSION">Pension</option>
         </select>
 
         <button

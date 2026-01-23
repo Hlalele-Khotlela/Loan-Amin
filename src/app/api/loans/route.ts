@@ -9,23 +9,19 @@ export async function GET(req: Request) {
   const limit = Number(url.searchParams.get("limit") ?? 10);
 
   try {
-    // Always show only pending loan requests
     const where: any = {
       status: "active",
     };
 
-    if (loan_type && loan_type !== "all") {
-      where.loan_type = {
-        equals: loan_type,
-        mode: "insensitive",
-      };
-    }
+    // Filter by loan type
+   if (loan_type && loan_type !== "all") {
+  where.loan_type = loan_type; // or { equals: loan_type }
+}
 
-    if (search) {
-      where.member_Id = {
-        contains: search,
-        mode: "insensitive",
-      };
+
+    // Filter by member_Id (Int)
+    if (search && !isNaN(Number(search))) {
+      where.member_Id = Number(search);
     }
 
     // Count for pagination
@@ -41,18 +37,16 @@ export async function GET(req: Request) {
       take: limit,
       orderBy: { request_id: "desc" },
       select: {
-        member_Id:true,
+        member_Id: true,
         loan_id: true,
-        totals_payeable:true,
-       intrests:true,
+        totals_payeable: true,
+        intrests: true,
         status: true,
         Principal: true,
         balance: true,
         loan_type: true,
       },
     });
-
-    console.log("Filters:", { type: loan_type, where });
 
     return NextResponse.json({
       data: result,
