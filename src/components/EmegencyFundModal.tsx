@@ -49,8 +49,10 @@ export default function TransactionModal({ isOpen, onClose, onSuccess }:  Transa
               onChange={(e) => setType(e.target.value as "deposit" | "withdrawal")}
               className="w-full border px-3 py-2 rounded"
             >
+              
+  
               <option value="deposit">Deposit</option>
-              <option value="withdrawal">Withdrawal</option>
+              <option value="withdraw">Withdrawal</option>
             </select>
           </div>
 

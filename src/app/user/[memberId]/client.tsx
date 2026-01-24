@@ -272,7 +272,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
               <h2 className="text-lg font-semibold mb-4">Group Contributions</h2>
               {member.GroupDeposits?.map((d: any) => (
                 <div
-                  key={d.id}
+                  key={d.group_id}
                   className="flex justify-between border p-2 rounded mb-2"
                 >
                   <span>Deposit</span>
