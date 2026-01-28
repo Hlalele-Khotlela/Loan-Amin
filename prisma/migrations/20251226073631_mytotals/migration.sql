@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Savings" ADD COLUMN     "total" DECIMAL(12,2) NOT NULL DEFAULT 0;

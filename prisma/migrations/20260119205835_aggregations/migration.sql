@@ -1,0 +1,24 @@
+-- AlterTable
+ALTER TABLE "Expenses" ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "Incomes" ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "ShareOnCapital" ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- CreateTable
+CREATE TABLE "montlyAgg" (
+    "id" SERIAL NOT NULL,
+    "Total_Earnings" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "LoanInterest" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "MembersImoveable" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "TotalImoveable" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "member_Id" INTEGER,
+    "Incomes" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "Expenses" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "Profits" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "montlyAgg_pkey" PRIMARY KEY ("id")
+);
