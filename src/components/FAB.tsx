@@ -4,7 +4,6 @@ import { text } from "stream/consumers"
 
 type FabProps = {
   onClick: () => void
-//   icon?: React.ReactNode
   text: string
 }
 
