@@ -62,7 +62,7 @@ export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) 
     
     <div className=" mx-3">
       <CooporateSummary cooporate={earnings}/>
-      <div className="grid grid-cols-3 gap-x-4 my-3 mt-12">
+      <div className="grid lg:grid-cols-3 lg:gap-x-4 lg:my-3 lg:mt-12">
         
         <Link className="p-4 bg-white shadow rounded-lg border hover:shadow-md transition" href="#">
             <h2 className="text-lg font-semibold">Loans</h2>
