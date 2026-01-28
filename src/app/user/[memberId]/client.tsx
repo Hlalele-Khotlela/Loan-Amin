@@ -6,7 +6,6 @@ import { usePermission } from "@/hooks/usePermission";
 import Cookies from "js-cookie";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
-import { FloatingAdminButton } from "@/components/floatingButton";
 import { LoanApplicationModal } from "@/components/loan-application-form";
 import FloatingActionButton from "@/components/FAB";
 
@@ -17,6 +16,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
   const { canViewSavings, canViewLoans, canManageStaff } = usePermission();
   const { user } = useAuth();
   const [openLoanModal, setOpenLoanModal] = useState(false);
+  const [open, setOpen] = useState(false)
 
 
   function buildActivityFeed(member: any) {
@@ -130,21 +130,61 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
   onClick={() => setOpenLoanModal(true)}
   text="Apply for Loan"/>
 
-          <nav className="mb-6 flex gap-2 border-b pb-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded ${
-                  activeTab === tab ? "bg-primary text-white" : "text-muted-foreground"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-            
+           <nav className="mb-6 border-b pb-2">
 
-           </nav>
+      {/* 🍔 Mobile hamburger */}
+      <div className="flex items-center justify-between md:hidden">
+        <span className="font-medium">{activeTab}</span>
+
+        <button
+          onClick={() => setOpen(!open)}
+          className="text-2xl"
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* 📱 Mobile dropdown */}
+      {open && (
+        <div className="mt-3 flex flex-col gap-2 md:hidden">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => {
+                setActiveTab(tab)
+                setOpen(false)
+              }}
+              className={`
+                px-4 py-2 rounded text-left
+                ${activeTab === tab
+                  ? 'bg-primary text-white'
+                  : 'bg-gray-100 text-muted-foreground'}
+              `}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* 🖥 Desktop tabs */}
+      <div className="hidden md:flex gap-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`
+              px-4 py-2 rounded
+              ${activeTab === tab
+                ? 'bg-primary text-white'
+                : 'text-muted-foreground'}
+            `}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </nav>
           
  <LoanApplicationModal 
  isOpen={openLoanModal} 
