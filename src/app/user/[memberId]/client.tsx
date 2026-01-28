@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { usePermission } from "@/hooks/usePermission";
 import Cookies from "js-cookie";
 import { useAuth } from "@/hooks/useAuth";
-import Link from "next/link";
 import { LoanApplicationModal } from "@/components/loan-application-form";
 import FloatingActionButton from "@/components/FAB";
 
