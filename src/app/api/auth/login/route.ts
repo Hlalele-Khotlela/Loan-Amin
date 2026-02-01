@@ -15,12 +15,16 @@ export async function POST(req: NextRequest) {
     }
 
     const token = jwt.sign(
-      { id: member.member_Id, email: member.email, role: member.Role },
+      { id: member.member_Id, 
+        email: member.email, 
+        role: member.Role,
+        memberId: member.member_Id },
       process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
 
     const response = NextResponse.json({ success: true, member });
+    
 
     // 🔥 The ONLY cookie format Firefox + Next.js 16 accepts in dev mode
     response.headers.set(

@@ -17,11 +17,9 @@ export async function GET(req: Request) {
   
 
 
- 
-
     try {
       const where: any = {
-        status:"pending",
+        status:"Pending",
       };
       if (loan_type && loan_type !== "all") {
         where.loan_type = {
@@ -58,6 +56,7 @@ export async function GET(req: Request) {
           amount: true,
           balance: true,
           loan_type: true,
+          type: true,
         }
       });
       // Log the raw rows before sending

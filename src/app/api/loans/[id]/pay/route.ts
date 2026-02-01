@@ -7,6 +7,7 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
   const {id} = await context.params;
   const loanId = parseInt(id, 10);
   const { paymentAmount } = await req.json();
+  
 
   console.log("PATCH body:", paymentAmount);
 
@@ -24,6 +25,10 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
   }
 
   const paymentDecimal= new Prisma.Decimal(paymentAmount);
+  const loanInterestPayment= paymentDecimal.mul(0.01); // 1% interest on payment
+  const principalPayment= paymentDecimal.sub(loanInterestPayment);
+  const updatedInterest= loan.intrests.sub(loanInterestPayment);
+  const updatedPrincipal= loan.Principal.sub(principalPayment);
   const newBalance = loan.balance.sub(paymentDecimal);
 //   const newInstallment= loan.instalments.add(paymentDecimal);
 
@@ -33,9 +38,18 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
     where: { loan_id: loanId },
     data: { balance: newBalance,
         instalments: loan.instalments.add(paymentDecimal),
+        intrests: updatedInterest,
+        
         status: newBalance.lessThanOrEqualTo(0)? "completed" : "active",
      },
   });
+   await prisma.incomes.create({
+    data:{
+      type: "LoanInterest",
+      amount: loanInterestPayment,
+      
+    }
+  })
 
   // record transactions
   await prisma.loanTransaction.create({
@@ -74,7 +88,7 @@ export async function PUT(req: Request, context: {params: Promise<{id: string}>}
   const body= await req.json();
   
   const installments= new Prisma.Decimal(body.instalment)
-  const intresRate = 0.02;
+  const intresRate = 0.01; 
   const principal =new Prisma.Decimal(body.Principal?? 0)
   const intrest= principal.mul(intresRate);
   const totalInt= new Prisma.Decimal(body.interest)
@@ -92,8 +106,9 @@ export async function PUT(req: Request, context: {params: Promise<{id: string}>}
       Loan_Duration: body.duration,
       totals_payeable: totalpayeable,
     },
+    
   });
-
+  
   await prisma.loanInterest.updateMany({
     where:{loan_id:updated.loan_id},
     data:{

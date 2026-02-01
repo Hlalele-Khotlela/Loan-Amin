@@ -33,6 +33,8 @@ export async function POST() {
     });
 
     
+// calculate total interest earned
+
 
 //   Record transaction
 
@@ -68,6 +70,22 @@ await prisma.ownerTransaction.create({
 
 
 }
+
+const totalSavings = await prisma.savings.aggregate({
+  _sum: {
+    amount: true,
+  },
+});
+const totalAmount = new Prisma.Decimal(totalSavings._sum.amount ?? 0);
+const totalSavingsIntrest= totalAmount.mul(0.005);
+
+await prisma.expenses.create({
+  data: {
+    type:"savingInterest",
+    amount: totalSavingsIntrest
+    
+  }
+});
 const shareOnCapital = await prisma.shareOnCapital.findMany();
 for (const shares of shareOnCapital){
 

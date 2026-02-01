@@ -1,67 +1,94 @@
 // /app/api/LoanRequests/[id]/route.ts
 import { NextResponse } from "next/server";
-import  {prisma} from "../../../../../lib/prisma/prisma";
-import {Prisma} from "@prisma/client";
+import { prisma } from "../../../../../lib/prisma/prisma";
+import { Prisma } from "@prisma/client";
 
-export async function PATCH(req: Request, context: {params: Promise<{ id: string }>}) {
+export async function PATCH(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   const { id } = await context.params;
-  const { status } = await req.json();
-  console.log("Updating request ID:", id, "to status:", status);
+  const { searchParams } = new URL(req.url);
+  const action = searchParams.get("action"); // "approve" or "reject"
 
+  if (!["approve", "reject"].includes(action ?? "")) {
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+  }
+
+  // Require at least 3 comments
+  const commentsCount = await prisma.loanRequestComments.count({
+    where: { request_id: Number(id) },
+  });
+
+  if (commentsCount < 3) {
+    return NextResponse.json(
+      { error: "At least three comments are required before updating status" },
+      { status: 400 }
+    );
+  }
+
+  // Update loan request status
+  const newStatus = action === "approve" ? "approved" : "rejected";
   const updated = await prisma.loanrequest.update({
     where: { request_id: Number(id) },
-    data: { status },
+    data: { status: newStatus },
   });
-  
-   
-  // check if loan already exists
-  const existingLoan = await prisma.loanrequest.findUnique({
-    where: {request_id: Number(id) }
+
+  // If rejected, just return
+  if (newStatus === "rejected") {
+    return NextResponse.json({ updated });
+  }
+
+  // If approved, create loan
+  const loanrequestdetails = await prisma.loanrequest.findUnique({
+    where: { request_id: Number(id) },
+    include: { collectrals: true },
   });
+
+  if (!loanrequestdetails) {
+    return NextResponse.json({ error: "Loan request not found" }, { status: 404 });
+  }
 
   const amount = updated.amount;
-  const intrest=  new Prisma.Decimal(0);
-  const totalAmount= amount.add(intrest);
-  const installment = new Prisma.Decimal(0);
-  const balance = totalAmount.sub(installment);
+  const rate = new Prisma.Decimal("0.01");
+  const loanDuration = Number(updated.Loan_Duration ?? 0);
 
- 
-     const rate =new Prisma.Decimal("0.01");
-     
- 
-     const loanDuration = Number(updated.Loan_Duration?? 0);
-     const totalInterest =amount.mul(rate).mul(loanDuration);
- 
-   
-      
-     
-      const amountPayeable = amount.add(totalInterest);
-      const minInstallment= amountPayeable.dividedBy(loanDuration);
+  if (loanDuration <= 0) {
+    return NextResponse.json(
+      { error: "Loan duration must be greater than zero" },
+      { status: 400 }
+    );
+  }
 
-    const newLoan = await prisma.loan.create({
-      data: {
-        member_Id: updated.member_Id,
-      // name: body.name,
+  const totalInterest = amount.mul(rate).mul(loanDuration);
+  const amountPayable = amount.add(totalInterest);
+  const minInstallment = amountPayable.dividedBy(loanDuration);
+
+  const newLoan = await prisma.loan.create({
+    data: {
+      member_Id: updated.member_Id,
       loan_type: updated.loan_type,
       Loan_Duration: updated.Loan_Duration,
       Principal: updated.amount,
-      
-      instalments: installment,
-      intrests: intrest,
-      totals_payeable: amountPayeable,
-      balance: balance,
+      instalments: new Prisma.Decimal(0),
+      intrests: totalInterest,
+      totals_payeable: amountPayable,
+      balance: amountPayable,
       status: "active",
-      collectral: updated.collectral,
-      collectralName1: updated.collectralName1,
-      collectralName2: updated.collectralName2,
-      collectralName3: updated.collectralName3,
       MinInstament: minInstallment,
-        
-      }
-    })
+    },
+  });
 
+  if (loanrequestdetails.collectrals.length > 0) {
+    await prisma.loanColletralInfo.createMany({
+      data: loanrequestdetails.collectrals.map((c) => ({
+        loan_id: newLoan.loan_id,
+        name: c.name,
+        phone: c.phone,
+        Type: c.Type,
+      })),
+    });
+  }
 
-  return NextResponse.json({updated, newLoan});
+  return NextResponse.json({ updated, newLoan });
 }
-
- 

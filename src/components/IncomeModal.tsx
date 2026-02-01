@@ -3,11 +3,11 @@ import { useState } from "react";
 
 export default function IncomeModal({ isOpen, onClose, onSuccess }: any) {
   const [amount, setAmount] = useState("");
-  const [Description, setDescription] = useState("");
+  const [type, setType] = useState(""); // 👈 enum type instead of Description
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const payload = { amount: Number(amount), Description };
+    const payload = { amount: Number(amount), type }; // 👈 send enum type
 
     const res = await fetch("/api/incomeExp", {
       method: "POST",
@@ -17,7 +17,7 @@ export default function IncomeModal({ isOpen, onClose, onSuccess }: any) {
 
     if (res.ok) {
       setAmount("");
-      setDescription("");
+      setType("");
       onSuccess(); // refresh table
       onClose();   // close modal
     } else {
@@ -46,14 +46,21 @@ export default function IncomeModal({ isOpen, onClose, onSuccess }: any) {
             className="w-full border px-3 py-2 rounded"
             required
           />
-          <input
-            type="text"
-            value={Description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
             className="w-full border px-3 py-2 rounded"
             required
-          />
+          >
+            <option value="">Select Income Type</option>
+            <option value="Penalty">Penalty</option>
+            <option value="Others">Others</option>
+            <option value="LoanInterest">Loan Interest</option>
+            <option value="BankChargeContribution">Bank Charge Contribution</option>
+            <option value="BadDebtsRecovered">Bad Debts Recovered</option>
+            <option value="stokvel">Stokvel</option>
+         
+          </select>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"

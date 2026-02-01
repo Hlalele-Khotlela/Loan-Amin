@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+ import ReportPage from "@/components/report";
 
 export default function InterestDashboard() {
   const [combined, setCombined] = useState<any[]>([]);
@@ -9,6 +10,7 @@ export default function InterestDashboard() {
   const [activeTab, setActiveTab] = useState<"combined" | "savings" | "groups">("combined");
   const [imoveableData, setImoveableData] = useState<any[]>([]);
   const [shares, setshares] = useState<any[]>([]);
+ 
 
   useEffect(() => {
     async function fetchData() {
@@ -131,6 +133,11 @@ export default function InterestDashboard() {
           </div>
         </div>
       )}
+
+      {/* Report Page Component */}
+      <div className="mt-6 mb-6">
+        <ReportPage />
+      </div>
 
       {/* Tabs */}
       <div className="mb-4 flex gap-4">

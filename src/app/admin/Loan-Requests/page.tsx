@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { LOANTYPE } from '@prisma/client';
+import { usePermission } from '@/hooks/usePermission';
 
 const loanTypeOptions = [
    { label: "Emergency", value: LOANTYPE.EMERGENCY },
@@ -57,6 +58,7 @@ export default function loansrequests() {
   const [page, setPage] = useState(15);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  
 
 
 
@@ -227,9 +229,9 @@ export default function loansrequests() {
                     <th className="py-2">Applicant</th>
                     <th className="py-2">Amount</th>
                     <th className="py-2">Status</th>
-                    <th className="py-2">Type</th>
-                    <th className="py-2">Ongoing Loan</th>
-                    <th className="py-2">Action</th>
+                    <th className="py-2">Loan Type</th>
+                    <th className="py-2">Request Type</th>
+                    <th className="py-2">View</th>
                     
                   </tr>
                 </thead>
@@ -243,21 +245,20 @@ export default function loansrequests() {
                       <td className="py-2">L{request.amount}</td>
                       <td className="py-2">{request.status}</td>
                       <td className="py-2">{request.loan_type}</td>
-                      <td className="py-2">L {request.balance}</td>
+                      <td className="py-2"> {request.type}</td>
                       <td className="py-2">
                        
                         
-                          <select
-                            id='status'
-                            value={status[request.request_id] ?? request.status}  
-                            onChange={(e) => handlechange(request.request_id, e.target.value)}
+                         
+
+                          {/* view  details */}
+                          <button
+                            type="button"
+                            className="px-4 py-2 rounded bg-blue-600 text-white"
+                            onClick={() => router.push(`/admin/Loan-Requests/${request.request_id}`)}
                           >
-                            
-                            <option value="pending">Pending</option>
-                            <option value="approved">Accept</option>
-                            <option value="rejected">Reject</option>
-                          </select>
-                       
+                            View Details
+                          </button>
 
                         
                       </td>
@@ -287,10 +288,6 @@ export default function loansrequests() {
     Next
   </button>
 </div>
-
-              <button type="submit" className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Save Changes
-              </button>
             </form>
           </Form>
         </CardContent>

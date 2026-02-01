@@ -80,7 +80,7 @@ export default function ExpenseTable() {
             <th className="px-4 py-2 border">Date</th>
             <th className="px-4 py-2 border">Description</th>
             <th className="px-4 py-2 border">Amount</th>
-            <th className="px-4 py-2 border">Balance</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -89,11 +89,9 @@ export default function ExpenseTable() {
               <td className="px-4 py-2 border text-center">
                 {new Date(t.created_at).toLocaleDateString()}
               </td>
-              <td className="px-4 py-2 border">{t.Description}</td>
+              <td className="px-4 py-2 border">{t.type}</td>
               <td className="px-4 py-2 border text-right">{Number(t.amount).toFixed(2)}</td>
-              <td className="px-4 py-2 border text-right font-semibold">
-                {Number(t.balance).toFixed(2)}
-              </td>
+              
             </tr>
           ))}
 
@@ -102,7 +100,7 @@ export default function ExpenseTable() {
             <td className="px-4 py-2 border text-center">Summary</td>
             <td className="px-4 py-2 border">Totals</td>
             <td className="px-4 py-2 border text-right">{totalIncome.toFixed(2)}</td>
-            <td className="px-4 py-2 border text-right">{finalBalance.toFixed(2)}</td>
+            
           </tr>
         </tbody>
       </table>

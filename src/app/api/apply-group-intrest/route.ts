@@ -6,7 +6,7 @@ export async function POST() {
   // Fetch all loans
   const groupsavings = await prisma.groupSaving.findMany();
 
-  // Apply 1% interest to each Savings
+  // Apply .05% interest to each Savings
   for (const saving of groupsavings) {
     const intrest = saving.total_Savings.mul(new Prisma.Decimal(0.005)); // balance × 0.01
     const newBalance= saving.total_Savings.add(intrest);

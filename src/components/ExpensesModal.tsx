@@ -1,15 +1,14 @@
 "use client";
 import { useState } from "react";
-import {toast} from "@/hooks/use-toast";
-
+import { toast } from "@/hooks/use-toast";
 
 export default function ExpensesModal({ isOpen, onClose, onSuccess }: any) {
   const [amount, setAmount] = useState("");
-  const [Description, setDescription] = useState("");
+  const [type, setType] = useState(""); // 👈 enum type instead of Description
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const payload = { amount: Number(amount), Description };
+    const payload = { amount: Number(amount), type }; // 👈 send enum type
 
     const res = await fetch("/api/Expenses", {
       method: "POST",
@@ -19,18 +18,18 @@ export default function ExpensesModal({ isOpen, onClose, onSuccess }: any) {
 
     if (res.ok) {
       setAmount("");
-      setDescription("");
+      setType("");
       onSuccess(); // refresh table
       onClose();   // close modal
-       toast({ title: "Transaction Successfull!",
-                description: "Expense has been updated.",
-              });
+      toast({
+        title: "Transaction Successful!",
+        description: "Expense has been updated.",
+      });
     } else {
-      toast(
-        {title: "Transaction Failed",
-            description: "Failed to create Expense"
-        }
-      );
+      toast({
+        title: "Transaction Failed",
+        description: "Failed to create Expense",
+      });
     }
   }
 
@@ -55,19 +54,29 @@ export default function ExpensesModal({ isOpen, onClose, onSuccess }: any) {
             className="w-full border px-3 py-2 rounded"
             required
           />
-          <input
-            type="text"
-            value={Description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
             className="w-full border px-3 py-2 rounded"
             required
-          />
+          >
+            <option value="">Select Expense Type</option>
+            <option value="rent">Rent</option>
+            <option value="stationery">Stationery</option>
+            <option value="Electricity">Utilities</option>
+            <option value="Repairs">Repairs</option>
+            <option value="Wages">Wages</option>
+            <option value="Refreshments">Refreshments</option>
+            <option value="BankCharge">Bank Charge</option>
+            <option value="transport">Transport</option>
+            <option value="sittingAllowence">Sitting Allowence</option>
+            <option value="Others">Other</option>
+          </select>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
           >
-            Save Income
+            Save Expense
           </button>
         </form>
       </div>

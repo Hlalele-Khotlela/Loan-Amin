@@ -1,55 +1,81 @@
 // src/app/api/finance/route.ts
 import { NextResponse } from "next/server";
-import {prisma} from "../../../lib/prisma/prisma"; // adjust import
+import { prisma } from "../../../lib/prisma/prisma";
 
+// POST: create a new income
 export async function POST(req: Request) {
-  const { amount, Description } = await req.json();
+  try {
+    const body = await req.json();
+    const { amount, type } = body;
 
- 
+    if (!amount || !type) {
+      return NextResponse.json(
+        { success: false, error: "Amount and type are required" },
+        { status: 400 }
+      );
+    }
+
     await prisma.incomes.create({
-      data: { amount, Description },
+      data: { amount, type },
     });
-  
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("POST /finance error:", err);
+    return NextResponse.json(
+      { success: false, error: "Failed to create income" },
+      { status: 500 }
+    );
+  }
 }
 
+// GET: fetch incomes (optionally filtered by month)
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const month = searchParams.get("month");
 
-export async function GET(req: Request) { 
-  const { searchParams } = new URL(req.url); 
-  const month = searchParams.get("month"); 
-  let transactions; 
-  if (month) { 
-    const [year, mon] = month.split("-"); 
-    const start = new Date(Number(year), Number(mon) - 1, 1); 
-    const end = new Date(Number(year), Number(mon), 1); 
-    // first day of next month 
-    transactions = await prisma.incomes.findMany({ 
-      where: { 
-        created_at: { 
-          gte: start, 
-          lt: end, 
+    let transactions;
+    if (month) {
+      const [year, mon] = month.split("-");
+      const start = new Date(Number(year), Number(mon) - 1, 1);
+      const end = new Date(Number(year), Number(mon), 1);
+
+      transactions = await prisma.incomes.findMany({
+        where: {
+          created_at: {
+            gte: start,
+            lt: end,
+          },
         },
-       }, 
-       orderBy: { created_at: "desc" }, 
-      }); 
-    } else { 
-      transactions = await prisma.incomes.findMany({ 
-        orderBy: { 
-          created_at: "desc" }, 
-        }); 
-      }
-       // 👉 Collect distinct months from all incomes 
-       const allTransactions = await prisma.incomes.findMany({ 
-        select: { created_at: true } 
-      }); 
-        const months = Array.from( 
-          new Set( 
-            allTransactions.map((t) => { 
-              const d = new Date(t.created_at); 
-              return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; 
-            })
-           )
-           ).sort(); 
-           return NextResponse.json({ transactions, months }); 
-          }
+        orderBy: { created_at: "desc" },
+      });
+    } else {
+      transactions = await prisma.incomes.findMany({
+        orderBy: { created_at: "desc" },
+      });
+    }
+
+    // Collect distinct months from all incomes
+    const allTransactions = await prisma.incomes.findMany({
+      select: { created_at: true },
+    });
+
+    const months = Array.from(
+      new Set(
+        allTransactions.map((t) => {
+          const d = new Date(t.created_at);
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        })
+      )
+    ).sort();
+
+    return NextResponse.json({ transactions, months });
+  } catch (err) {
+    console.error("GET /finance error:", err);
+    return NextResponse.json(
+      { transactions: [], months: [], error: "Failed to fetch incomes" },
+      { status: 500 }
+    );
+  }
+}

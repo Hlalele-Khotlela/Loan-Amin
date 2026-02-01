@@ -1,56 +1,78 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
+import { loanAggregations } from "@/lib/loan-qualification/aggregations";
+import { checkRevolvingEligibility } from "@/lib/revolving";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const { memberId, loanType, amount, duration, collateralType, collaterals, accountNumber, requestType } = body;
 
-    const {
-      memberId,
-      loanType,
-      amount,
-      duration,
-      collateralType,
-      collateral1,
-      collateral2,
-      collateral3,
-    } = body;
-console.log("body :", body)
-    // Basic validation
-    if (!memberId || !loanType || !amount || !collateralType) {
+    const memberIDNum = Number(memberId);
+    const limits = await loanAggregations(memberIDNum);
+
+    const maxLimit =
+      loanType === "SHORT_TERM"
+        ? limits.shortTermLimit
+        : loanType === "EMERGENCY"
+        ? limits.EmergencyLimit
+        : limits.longTermLimit;
+
+    if (Number(amount) > maxLimit) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: `Requested amount exceeds your limit of ${maxLimit}` },
         { status: 400 }
       );
     }
 
+    if (!memberId || !loanType || !amount || !collateralType) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 410 });
+    }
+
+    const existingLoan = await prisma.loan.findFirst({
+      where: { member_Id: memberIDNum, loan_type: loanType, status: "active" },
+      select: { Principal: true, instalments: true, balance: true, loan_type: true, status: true },
+    });
+
+    if (existingLoan) {
+      const result = checkRevolvingEligibility(existingLoan, {
+        shortTermLimit: limits.shortTermLimit,
+        emergencyLimit: limits.EmergencyLimit,
+      });
+
+      if (!result.eligible) {
+        return NextResponse.json({ error: result.reason }, { status: 400 });
+      }
+    }
+
     const loan = await prisma.loanrequest.create({
       data: {
-        member_Id: Number(memberId),
-        applicant: "hlalele",
-        amount: amount,
+        member_Id: memberIDNum,
+        applicant: memberId.toString(),
+        amount,
         loan_type: loanType,
         status: "Pending",
-
-        // FIXED: use the correct field names
-        collectral: collateralType,
-        collectralName1: collateral1,
-        collectralName2: collateral2,
-        collectralName3: collateral3,
-
+        accountNumber,
+        type: requestType,
+        collectrals: body.collectrals,
         Loan_Duration: Number(duration),
       },
     });
 
-    return NextResponse.json(
-      { message: "Loan application submitted successfully", loan },
-      { status: 201 }
-    );
+    if (Array.isArray(collaterals) && collaterals.length > 0) {
+      await prisma.loanColletralInfo.createMany({
+        data: collaterals.map((c: { name: string; phoneNumber: string }) => ({
+          request_id: loan.request_id,
+          name: c.name,
+          phone: c.phoneNumber,
+          Type: collateralType,
+        })),
+      });
+    }
+
+    return NextResponse.json({ message: "Loan application submitted successfully", loan }, { status: 201 });
   } catch (error) {
     console.error("Loan application error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -21,6 +21,7 @@ export default async function MemberProfile({
       loan:true,
       savings: true,
       groupSavings: true,
+      groupSavingsTransactions: true,
       GroupDeposits: true,
       GroupWithdrawal: true,
       loanrequest: true,
@@ -53,6 +54,7 @@ function serializeMember(member: any) {
       balance: l.balance?.toString() ?? "0",
       MinInstament: l.MinInstament?.toString() ?? "0",
            })) ?? [],
+
       savings: member.savings?.map((s: any) => ({
                ...s, 
 
@@ -80,9 +82,15 @@ function serializeMember(member: any) {
                              ...w, 
       amount: w.amount?.toString() ?? "0", })) ?? [],
 
+      groupSavingsTransactions: member.groupSavingsTransactions?.map((gst: any) => ({
+                             ...gst, 
+      amount: gst.amount?.toString() ?? "0", })) ?? [],
+
       loanrequest: member.loanrequest?.map((lr: any) => ({
                                  ...lr, 
-      amount: lr.amount?.toString() ?? "0", })) ?? [], }; }
+      amount: lr.amount?.toString() ?? "0", 
+      created_at: lr.created_at instanceof Date ? lr.created_at.toISOString() : lr.created_at,
+    })) ?? [], }; }
 
 // Serialize Decimals to  Strings
 
@@ -94,19 +102,21 @@ function serializeDashboard(data: any){
         totals_payeable: data.loans._sum.totals_payeable?.toString() ?? "0",
         balance: data.loans._sum.balance?.toString() ?? "0",
       },
+      _count: data.loans._count ?? 0,
     },
     savings: {
       _sum: {
         amount: data.savings._sum.amount?.toString() ?? "0",
-        interest: data.savings._sum.intrest?.toString() ?? "0",
+        interest: data.savings._sum.interest?.toString() ?? "0",
         total: data.savings._sum.total?.toString() ?? "0",
       },
+      _count: data.savings._count ?? 0,
     },
 
     groupTransactions: data.groupTransactions.map((tx: any)=>({
       type: tx.type,
-      amount: tx._sum.amount?.toString()?? "0",
-    })),
+      amount: tx.amount?.toString()?? "0",
+    }))
 
   };
 }

@@ -78,7 +78,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
         <div className=" gap-2 ">
            <h2 className="text-lg font-semibold">Member Information</h2>
         <p><strong>Phone:</strong> {member.phone}</p>
-        <p><strong>Joined:</strong> {new Date(member.createdAt).toDateString()}</p>
+        <p><strong>Joined:</strong> {new Date(member.JoinedAt).toDateString()}</p>
 
         </div>
         <div className="gap-8">
@@ -134,7 +134,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
                 <td className="px-4 py-4 border">{l.intrests}</td>
                 <td className="px-4 py-4 border">{l.balance.toString()}</td>
               <td className="px-4 py-4 border">{l.loan_type}</td>
-                   <td className="px-4 py-4 border"> {new Date(l.created_at).toLocaleDateString()}</td>
+                   <td className="px-4 py-4 border"> {new Date(l.created_at).toISOString()}</td>
                    <td className="px-4 py-4 border"> 
                                            <Link
                     href={`/admin/Loans/${l.member_Id}/${l.loan_id}/transactions`}
@@ -181,7 +181,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
                </td>
                 <td className="px-4 py-4 border">{s.amount}</td>    
                 <td className="px-4 py-4 border">{s.interest}</td>                          
-                   <td className="px-4 py-4 border"> {new Date(s.started_at).toLocaleDateString()}</td>
+                   <td className="px-4 py-4 border"> {new Date(s.started_at).toISOString()}</td>
                    <td className="px-4 py-4 border">{s.total}</td>
                    <td className="px-4 py-4 border"> 
                                            <Link
@@ -234,7 +234,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
           <ul className="space-y-2">
             {member.GroupDeposits.map((d: any) => (
               <li key={d.deposit_id} className="border-b pb-2">
-                R {d.amount} — {new Date(d.deposited_at).toLocaleDateString()} -- Group#{d.group_id}
+                R {d.amount} — {new Date(d.deposited_at).toISOString()} -- Group#{d.group_id}
               </li>
             ))}
           </ul>
@@ -250,8 +250,8 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
         ) : (
             <ul className="space-y-2">
             {member.loanrequest.map((lr: any) => (
-                <li key={lr.id} className="border-b pb-2">
-                R {lr.amount} — {lr.status} — {new Date(lr.requested_at).toLocaleDateString()}
+                <li key={lr.request_id} className="border-b pb-2">
+                R {lr.amount} — {lr.status} — {new Date(lr.created_at).toDateString()}
                 </li>
             ))}
             </ul>
@@ -268,7 +268,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
           <ul className="space-y-2">
             {member.GroupWithdrawal.map((w: any) => (
               <li key={w.withdrawal_id} className="border-b pb-2">
-                R {w.amount} — {new Date(w.created_at).toLocaleDateString()} -- Group#{w.group_id}
+                R {w.amount} — {new Date(w.created_at).toISOString()} -- Group#{w.group_id}
               </li>
             ))}
           </ul>

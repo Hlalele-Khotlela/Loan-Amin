@@ -4,10 +4,12 @@
 import { useState } from "react";
 import { LoanModal } from "@/components/LoanEditDelModal";
 import { LoanDetails } from "./LoanDetails";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function LoanClient({ loans }: { loans: any }) {
   const [selectedLoan, setSelectedLoan] = useState<any | null>(null);
   const [mode, setMode] = useState<"edit" | "delete" | null>(null);
+  const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
 
   async function handleConfirm(updatedLoan: any) {
     if (mode === "delete") {
@@ -33,7 +35,9 @@ export default function LoanClient({ loans }: { loans: any }) {
       ) : (
         
         <div className="space-y-4">
+          
             <div className="space-x-2">
+              {canApproveLoans && (
                 <button
                   onClick={() => {
                     setSelectedLoan(loans);
@@ -43,6 +47,8 @@ export default function LoanClient({ loans }: { loans: any }) {
                 >
                   Edit
                 </button>
+              )}
+              {canApproveLoans && (
                 <button
                   onClick={() => {
                     setSelectedLoan(loans);
@@ -52,6 +58,7 @@ export default function LoanClient({ loans }: { loans: any }) {
                 >
                   Delete
                 </button>
+              )}
               </div>
             <LoanDetails loan={loans}/>
           
