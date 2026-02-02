@@ -30,10 +30,11 @@ export default function CreateLoanPage() {
 useEffect(() => {
   async function fetchExistingLoan() {
     if (!member_Id || !loanType) return;
-    const res = await fetch(`/api/Member/${member_Id}/active-loans/?type=${loanType}`);
+    const res = await fetch(`/api/Member/${member_Id}/active-loans`);
     if (res.ok) {
       const data = await res.json();
-      setExistingLoan(data[0] || null);
+      const match = data.find((loan: any) => loan.loan_type === loanType);
+      setExistingLoan(match || null);
     }else{
       setExistingLoan(null);
     }
@@ -94,9 +95,9 @@ const hasExistingLoanOfType =
       prev.map((c, i) => (i === index ? { ...c, [field]: value } : c))
     );
   }
-  console.log("existingLoan Principal:", existingLoan?.Principal);
-  console.log("existingLoan:", existingLoan);
-const revolvingResult =
+
+
+  const revolvingResult =
   existingLoan && limits
     ? checkRevolvingEligibility(
         {
@@ -108,12 +109,15 @@ const revolvingResult =
         },
         {
           shortTermLimit: limits.shortTermLimit,
-          emergencyLimit: limits.EmergencyLimit,
+          EmergencyLimit: limits.EmergencyLimit,
+          longTermLimit: limits.longTermLimit,
         }
       )
     : { eligible: false, reason: "no existing loan" };
 
 
+
+console.log("revolvingResult:", revolvingResult);
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -282,7 +286,7 @@ const revolvingResult =
               {requestType === "revolve" && existingLoan && (
                 <div className="mt-2 space-y-2 text-sm">
                   {revolvingResult.eligible ? (
-                    <span className="text-green-600">Eligible for revolving loan up to {revolvingResult.maxRevolvingAmount}</span>
+                    <span className="text-green-600">{revolvingResult.reason} (Max Revolving Amount: {revolvingResult.maxRevolvingAmount})</span>
                   ) : (
                     <span className="text-red-600">{revolvingResult.reason}</span>
                   )}

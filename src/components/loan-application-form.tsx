@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import Cookies from "js-cookie";
+import { checkRevolvingEligibility } from "@/lib/revolving";
 
 interface LoanApplicationModalProps {
   memberId: number;
@@ -28,15 +29,26 @@ export function LoanApplicationModal({
 }: LoanApplicationModalProps) {
   if (!isOpen) return null;
 
-  const [limits, setLimits] = useState<Limits | null>(null);
-  const [loanType, setLoanType] =
-    useState<"SHORT_TERM" | "LONG_TERM" | "EMERGENCY" | "">("");
+  
+  const [loanType, setLoanType] = useState("");
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
-  const [collateralType, setCollateralType] = useState<string>("");
+
   const [activeLoans, setActiveLoans] = useState<string[]>([]);
   const [instalments, setInstalments] = useState<number>(0);
+  const [collateralType, setCollateralType] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [requestType, setRequestType] = useState("");
+  const [existingLoan, setExistingLoan] = useState<any | null>(null);
+
+  // Limits state
+       const [limits, setLimits] = useState<{
+      shortTermLimit: number;
+      longTermLimit: number;
+      EmergencyLimit: number;
+    } | null>(null);
+  
 
   // Collateral contacts state (3 slots)
   const [collaterals, setCollaterals] = useState<CollateralContact[]>([
@@ -45,6 +57,28 @@ export function LoanApplicationModal({
     { name: "", phoneNumber: "" },
   ]);
 
+  useEffect(() => {
+    async function fetchExistingLoan() {
+      if (!memberId || !loanType) return;
+      const res = await fetch(`/api/Member/${memberId}/active-loans`);
+      if (res.ok) {
+        const data = await res.json();
+        const match = data.find((loan: any) => loan.loan_type === loanType);
+        setExistingLoan(match || null);
+      }else{
+        setExistingLoan(null);
+      }
+    }
+    fetchExistingLoan();
+  }, [memberId, loanType]);
+  
+   // true if loan exists
+  const hasExistingLoanOfType =
+    existingLoan && existingLoan.loan_type === loanType;
+  
+  
+   
+ 
   /* ---------------- Fetch limits ---------------- */
   useEffect(() => {
     if (!Number.isInteger(memberId)) return;
@@ -163,6 +197,24 @@ export function LoanApplicationModal({
     onClose?.();
   };
 
+    const revolvingResult =
+    existingLoan && limits
+      ? checkRevolvingEligibility(
+          {
+            loan_type: existingLoan.loan_type,
+            Principal: Number(existingLoan.Principal),
+            instalments: Number(existingLoan.instalments),
+            balance: Number(existingLoan.balance),
+            status: existingLoan.status,
+          },
+          {
+            shortTermLimit: limits.shortTermLimit,
+            EmergencyLimit: limits.EmergencyLimit,
+            longTermLimit: limits.longTermLimit,
+          }
+        )
+      : { eligible: false, reason: "no existing loan" };
+
   /* ---------------- Collateral input handler ---------------- */
   const handleCollateralChange = (
     index: number,
@@ -173,6 +225,11 @@ export function LoanApplicationModal({
     updated[index][field] = value;
     setCollaterals(updated);
   };
+
+  type CollateralContact = {
+  name: string;
+  phoneNumber: string;
+};
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
@@ -195,47 +252,47 @@ export function LoanApplicationModal({
           className="p-6 space-y-6 overflow-y-auto flex-1"
         >
           {/* Loan details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Loan Type */}
             <div>
               <label className="block text-sm font-medium mb-1">Loan Type</label>
               <select
-                name="loanType"
-                value={loanType}
-                onChange={(e) =>
-                  setLoanType(e.target.value as typeof loanType)
-                }
                 className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                value={loanType}
+                onChange={(e) => setLoanType(e.target.value)}
                 required
               >
-                <option
-                  value="SHORT_TERM"
-                  disabled={activeLoans.includes("SHORT_TERM")}
-                >
-                  Short Term
-                </option>
-                <option
-                  value="LONG_TERM"
-                  disabled={activeLoans.includes("LONG_TERM")}
-                >
-                  Long Term
-                </option>
-                <option
-                  value="EMERGENCY"
-                  disabled={activeLoans.includes("EMERGENCY")}
-                >
-                  Emergency
-                </option>
+                <option value="">-- Choose Loan Type --</option>
+                <option value="EMERGENCY">Emergency</option>
+                <option value="LONG_TERM">Long Term</option>
+                <option value="SHORT_TERM">Short Term</option>
               </select>
             </div>
 
+            {/* request type */}
             <div>
-              <label className="block text-sm font-medium mb-1">Amount</label>
+              <label className="block text-sm font-medium mb-1">Request Type</label>
+              <select
+                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                value={requestType}
+                onChange={(e) => setRequestType(e.target.value)}
+                required
+              >
+                
+                <option value="">-- Choose Request Type --</option>
+                <option value="new">New</option>
+                <option value="revolve">Revolving</option>
+              </select>
+            </div>
+
+            {/* Loan Amount */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Loan Amount</label>
               <input
-                name="amount"
                 type="number"
+                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
                 required
               />
               {limits && loanType && (
@@ -259,6 +316,58 @@ export function LoanApplicationModal({
                     : limits.EmergencyLimit}
                 </span>
               )}
+              {requestType === "revolve" && existingLoan && (
+                <div className="mt-2 space-y-2 text-sm">
+                  {revolvingResult.eligible ? (
+                    <span className="text-green-600">{revolvingResult.reason} (Max Revolving Amount: {revolvingResult.maxRevolvingAmount})</span>
+                  ) : (
+                    <span className="text-red-600">{revolvingResult.reason}</span>
+                  )}
+
+                </div>
+
+              )}
+            </div>
+
+            {/* Duration */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Duration (months)
+              </label>
+              <input
+                type="number"
+                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+                required
+              />
+            </div>
+
+             <div>
+              <label className="block text-sm font-medium mb-1">
+                Account Number
+              </label>
+              <input
+                type="text"
+                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* Collateral Type */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Collateral Type
+              </label>
+              <input
+                type="text"
+                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                value={collateralType}
+                onChange={(e) => setCollateralType(e.target.value)}
+                required
+              />
             </div>
           </div>
 
@@ -267,29 +376,9 @@ export function LoanApplicationModal({
             <h3 className="text-sm font-semibold text-gray-700">
               Collateral Contacts
             </h3>
-            <div>
-              <label className="block text-sm font-medium mb-1">Collectral Type</label>
-              <input
-                name="collateralType"
-                type="text"
-                value={collateralType}
-               onChange={(e) => setCollateralType(e.target.value)}
-                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              </div>
+            
 
-              <div>
-              <label className="block text-sm font-medium mb-1">Loan Duration in months</label>
-              <input
-                name="duration"
-                type="number"
-                value={duration}
-               onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              </div>
+            
             {collaterals.map((c, i) => (
               <div key={i} className="grid grid-cols-2 gap-2">
                 <input
@@ -330,9 +419,7 @@ export function LoanApplicationModal({
   <button
     type="submit"
     disabled={
-      loading ||
-      loanType === "" ||
-      (activeLoans.includes(loanType) && !canRevolve)
+    ( requestType === "new" && hasExistingLoanOfType) || (requestType === "revolve" && !revolvingResult.eligible )
     }
     className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
   >

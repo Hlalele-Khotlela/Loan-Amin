@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     if (existingLoan) {
       const result = checkRevolvingEligibility(existingLoan, {
         shortTermLimit: limits.shortTermLimit,
-        emergencyLimit: limits.EmergencyLimit,
+        EmergencyLimit: limits.EmergencyLimit,
       });
 
       if (!result.eligible) {

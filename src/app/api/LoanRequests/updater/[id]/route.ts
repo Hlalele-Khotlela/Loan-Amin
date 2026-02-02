@@ -64,6 +64,44 @@ export async function PATCH(
   const amountPayable = amount.add(totalInterest);
   const minInstallment = amountPayable.dividedBy(loanDuration);
 
+  // check if loan type is already exists for the member
+  const existingLoan = await prisma.loan.findFirst({
+    where: {
+      member_Id: updated.member_Id,
+      loan_type: updated.loan_type,
+      status: "active",
+    },
+  });
+
+  let loanRecord;
+  if (existingLoan) {
+    loanRecord = await prisma.loan.update({
+      where: { loan_id: existingLoan.loan_id },
+      data: {
+        
+        totals_payeable: existingLoan.totals_payeable.add(amountPayable),
+        balance: existingLoan.balance.add(amountPayable),
+        Loan_Duration: existingLoan.Loan_Duration + loanDuration,
+      },
+      
+    });
+   
+   if (loanrequestdetails.collectrals.length > 0) {
+    await prisma.loanColletralInfo.createMany({
+      data: loanrequestdetails.collectrals.map((c) => ({
+        loan_id: existingLoan?.loan_id,
+        name: c.name,
+        phone: c.phone,
+        Type: c.Type,
+      })),
+    });
+  }
+    return NextResponse.json({ updated, loanRecord });
+  }
+  else {
+    // Create new loan record
+  
+
   const newLoan = await prisma.loan.create({
     data: {
       member_Id: updated.member_Id,
@@ -91,4 +129,5 @@ export async function PATCH(
   }
 
   return NextResponse.json({ updated, newLoan });
+}
 }
