@@ -1,7 +1,12 @@
 import { GroupSummaryType } from "@/types/GroupSummaryTypes";
-import { useEffect } from "react";
-export default function MembersList({ members }: { members?: GroupSummaryType["members"] }) {
- 
+
+export default function MembersList({
+  members,
+  groupId,
+}: {
+  members?: GroupSummaryType["members"];
+  groupId: number;
+}) {
   return (
     <div className="bg-white p-6 rounded-xl shadow">
       <h2 className="text-lg font-bold mb-4">Members</h2>
@@ -13,20 +18,28 @@ export default function MembersList({ members }: { members?: GroupSummaryType["m
             <th>Member ID</th>
             <th>Member Deposit</th>
             <th>Member Withdrawal</th>
+            <th>Member Interest</th>
             <th>Member Balance</th>
           </tr>
         </thead>
 
         <tbody>
-          {members?.map((m) => (
-            <tr key={m.member_Id} className="border-t">
-              <td>{m.firstName} {m.lastName}</td>
-              <td>{m.member_Id}</td>
-              <td>{m.totalDeposited}</td>
-              <td>{m.totalWithdrawn}</td>
-              <td>{m.balance}</td>
-            </tr>
-          ))}
+          {members?.map((m) => {
+            const latestInterest = m.MemberInterest
+              ?.filter((mi: any) => mi.group_Id === groupId) // 👈 filter by group
+              .slice(-1)[0]?.AccumulatedInterest || 0;
+
+            return (
+              <tr key={m.member_Id} className="border-t">
+                <td>{m.firstName} {m.lastName}</td>
+                <td>{m.member_Id}</td>
+                <td>{m.totalDeposited}</td>
+                <td>{m.totalWithdrawn}</td>
+                <td>{latestInterest}</td>
+                <td>{m.balance}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

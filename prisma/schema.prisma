@@ -113,6 +113,19 @@ model loanrequest {
  
   
 }
+model MemberInterest {
+  id              Int      @id @default(autoincrement())
+  member_Id       Int
+  group_Id        Int
+  netContribution  Decimal @db.Decimal(12, 2) @default(0)  // deposits - withdrawals at calculation time
+  interestShare   Decimal @db.Decimal(12, 2) @default(0) // allocated interest amount
+  AccumulatedInterest    Decimal @db.Decimal(12, 2) @default(0)   // rate used for calculation
+  calculatedAt    DateTime  @default(now())
+
+  member          Member    @relation(fields: [member_Id], references: [member_Id])
+  group           GroupSaving @relation(fields: [group_Id], references: [group_id])
+}
+
 
 model Member {
   firstName String
@@ -138,6 +151,7 @@ model Member {
 
  
   GroupWithdrawal GroupWithdrawal[]
+  MemberInterest MemberInterest[]
   groupSavingsTransactions GroupSavingsTransaction[]
   EmegencyFund EmegencyFund[]
   raffle Raffles[]
@@ -182,6 +196,7 @@ model GroupSaving{
  
    members      Member[]  @relation("GroupMembership")
    transactions  GroupSavingsTransaction[]
+   MemberInterest MemberInterest[]
 }
 model Savings{
   member    Member @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)

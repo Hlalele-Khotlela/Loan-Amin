@@ -12,11 +12,19 @@ export async function GET(
   const group = await prisma.groupSaving.findUnique({
     where: { group_id: Number(groupId) },
     include: {
-      members: true,
+      members: {
+        include: {
+          MemberInterest: true,
+        },
+      },
       deposits: true,
       withdraw: true,
+     
     },
   });
+ 
+  console.log("members", JSON.stringify(group?.members, null, 2));
+
 
   if (!group) {
     return NextResponse.json({ error: "Group not found" }, { status: 404 });

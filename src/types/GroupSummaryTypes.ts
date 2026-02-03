@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/client";
 
 export type GroupMemberWithTotals = {
   member_Id: string;
@@ -7,7 +8,20 @@ export type GroupMemberWithTotals = {
   totalDeposited: number;
   totalWithdrawn: number;
   balance: number;
+  MemberInterest: MemberInterestType[];
+ 
+  
 };
+export type MemberInterestType = {
+  id: number;
+  member_Id: number;
+  group_Id: number;
+  netContribution: number;
+  interestShare: number;
+  AccumulatedInterest: number; // 👈 must match schema field name
+  calculatedAt: string;
+};
+
 
 
 
@@ -38,6 +52,7 @@ export interface MemberType {
   balance:number;
   totalWithdrawn: number;
   totalDeposited:number;
+  MemberInterest?: MemberInterestType[];
 }
 
 export interface DepositType {

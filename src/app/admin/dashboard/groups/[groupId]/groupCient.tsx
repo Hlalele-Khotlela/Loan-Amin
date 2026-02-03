@@ -46,7 +46,7 @@ return(
       
 
       <GroupSummary group={group} />
-      <GroupMembersList members={group.members} />
+      <GroupMembersList members={group.members} groupId={Number(groupId)} />
       <RecentActivity deposits={group.deposits} withdrawals={group.withdrawals} />
       <GroupTransactions groupId={Number(groupId)} />
 {showModal &&(

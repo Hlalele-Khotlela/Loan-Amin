@@ -27,8 +27,11 @@ export async function GET(
             member_Id: true,
             firstName: true,
             lastName: true,
+            
           },
+          
         },
+        MemberInterest: true,
       },
     });
 

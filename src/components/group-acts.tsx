@@ -4,12 +4,18 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { usePermission } from "@/hooks/usePermission";
 
+
 export default function GroupActs() {
   const router = useRouter();
   const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
 
   async function handleApplyInterest() {
-    await fetch("/api/apply-group-intrest", { method: "POST" });
+    await fetch("/api/apply-group-intrest", { 
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     toast({
       title: "Interest Applied",
