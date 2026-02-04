@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
-import { Prisma } from "@/generated/prisma/client";
+import { Decimal } from '@prisma/client/runtime/client.js';
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const body = await req.json();
@@ -14,7 +14,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (!record) return NextResponse.json({ message: "Not found" }, { status: 404 });
 
     // Only accumulatedInterest is editable
-    const newAccumulated = new Prisma.Decimal(body.accumulatedInterest);
+    const newAccumulated = Decimal(body.accumulatedInterest);
 
     // Recalculate totals = amount + accumulatedInterest
     const totals = record.amount.add(newAccumulated);

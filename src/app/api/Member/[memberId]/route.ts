@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma/prisma";
-import { Prisma } from "@/generated/prisma/browser";
+import { Decimal } from '@prisma/client/runtime/client.js';
 
 export async function GET(
   req: Request,
@@ -95,8 +95,8 @@ export async function DELETE(_: Request, context: {params: Promise<{memberId: st
       _sum: {amount: true},
     });
 
-    const Totaldepost= new Prisma.Decimal(deposit._sum.amount ?? 0);
-    const Totalwithdrawal =new Prisma.Decimal(withdrawals._sum.amount ?? 0);
+    const Totaldepost= Decimal(deposit._sum.amount ?? 0);
+    const Totalwithdrawal =Decimal(withdrawals._sum.amount ?? 0);
 
     await prisma.groupSaving.update({
       where: {

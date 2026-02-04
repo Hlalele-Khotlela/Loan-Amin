@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
-import { Prisma } from "@/generated/prisma/browser";
+import { Decimal } from '@prisma/client/runtime/client.js';
+
+// Example usage
+const amount: Decimal = new Decimal(123.45);
+console.log(amount.toFixed(2)); // "123.45"
+
+
 
 export async function POST(
   req: Request,
@@ -22,8 +28,8 @@ export async function POST(
     }
 
     const body = await req.json();
-    const amount = new Prisma.Decimal(body.amount);
-    const interest = new Prisma.Decimal(body.interest);
+    const amount = Decimal(body.amount);
+    const interest = Decimal(body.interest);
     const totalWith = amount.add(interest);
 
     const rawAmount = Number(body.amount);
