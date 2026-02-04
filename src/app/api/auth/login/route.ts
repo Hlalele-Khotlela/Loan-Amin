@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const { email, memberId } = await req.json();
 
+    // ✅ Find member by ID
     const member = await prisma.member.findUnique({
       where: { member_Id: Number(memberId) },
     });
@@ -14,23 +15,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    // ✅ Sign JWT
     const token = jwt.sign(
-      { id: member.member_Id, 
-        email: member.email, 
+      {
+        id: member.member_Id,
+        email: member.email,
         role: member.Role,
-        memberId: member.member_Id },
+        memberId: member.member_Id,
+      },
       process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
 
+    // ✅ Create response and set cookie properly
     const response = NextResponse.json({ success: true, member });
-    
 
-    // 🔥 The ONLY cookie format Firefox + Next.js 16 accepts in dev mode
-    response.headers.set(
-      "Set-Cookie",
-      `token=${token}; Path=/; Max-Age=3600`
-    );
+    response.cookies.set({
+      name: "token",
+      value: token,
+      httpOnly: true,   // secure: not accessible via JS
+      path: "/",        // available across the app
+      maxAge: 3600,     // 1 hour
+    });
 
     return response;
   } catch (error) {

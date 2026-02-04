@@ -12,22 +12,35 @@ export async function POST(
 
     
 
+    
+
     if (isNaN(savingsId)) {
       return NextResponse.json(
         { message: "Invalid savings ID" },
-        { status: 400 }
+        { status: 409 }
       );
     }
 
     const body = await req.json();
     const amount = new Prisma.Decimal(body.amount);
+    const interest = new Prisma.Decimal(body.interest);
+    const totalWith = amount.add(interest);
 
-    if (!amount || amount.toNumber() <= 0) {
-      return NextResponse.json(
-        { message: "Invalid withdrawal amount" },
-        { status: 400 }
-      );
+    const rawAmount = Number(body.amount);
+    const rawInterest = Number(body.amount);
+
+    if(isNaN(rawAmount) || rawAmount<= 0){
+      return NextResponse.json({message: "Invalid withdrawal amount"}, {status: 400});
+
     }
+
+    if (isNaN(rawInterest) || rawInterest < 0){
+      return NextResponse.json({message: "Invalid interest amount"}, {status: 400});
+    }
+
+    console.log("body", body);
+
+    
 
     // Fetch savings record
     const savings = await prisma.savings.findUnique({
@@ -41,12 +54,17 @@ export async function POST(
       );
     }
 
-    // Prevent overdraft
-    if (savings.amount < amount) {
-      return NextResponse.json(
-        { message: "Insufficient balance" },
-        { status: 400 }
-      );
+    const availableBalance = savings.amount.add(savings.interest);
+    if(availableBalance.lt(totalWith)){
+      return NextResponse.json({message: "Insufficient balance"}, {status: 400});
+    }
+
+    if(savings.amount < amount){
+      return NextResponse.json({message: "Insufficient balance"}, {status: 400});
+    }
+
+    if(savings.interest < interest){
+      return NextResponse.json({message: "Insufficient balance"}, {status: 400});
     }
 
     // Update balance
@@ -54,13 +72,15 @@ export async function POST(
       where: { savings_id: savingsId },
       data: {
         amount: savings.amount.sub(amount),
+        interest: savings.interest.sub(interest),
+        total: savings.total.sub(totalWith),
       },
     });
 
     await prisma.savingsTransaction.create({
         data:{
             savings_id: savings.savings_id,
-            amount: savings.amount,
+            amount: totalWith,
             type: "WITHDRAWAL"
         }
     })

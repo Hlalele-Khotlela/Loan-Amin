@@ -33,10 +33,10 @@ export default function MembersList({
               <tr key={m.member_Id} className="border-t">
                 <td>{m.firstName} {m.lastName}</td>
                 <td>{m.member_Id}</td>
-                <td>{m.totalDeposited}</td>
-                <td>{m.totalWithdrawn}</td>
-                <td>{latestInterest}</td>
-                <td>{m.balance}</td>
+                <td>{Number(m.totalDeposited).toFixed(2)}</td>
+                <td>{Number(m.totalWithdrawn).toFixed(2)}</td>
+                <td>{Number(latestInterest).toFixed(2)}</td>
+                <td>{Number(m.balance).toFixed(2)}</td>
               </tr>
             );
           })}

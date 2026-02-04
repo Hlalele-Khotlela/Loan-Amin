@@ -10,17 +10,24 @@ export function AdminNav() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const token = Cookies.get("token");
+    const fetchUser = async ()=> {
+      try{
+         const res = await fetch("/api/me", { credentials: "include" });
+         if (!res.ok) return;
+         const data = await res.json();
+         setUser(data.user);
+        
+      }
+      catch (err){
+        console.error("Failed to fetch user", err)
 
-    if (!token) return;
-
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      setUser(payload); // contains id, email, role
-    } catch (err) {
-      console.error("Invalid token");
+      }
     }
+fetchUser();
+    
   }, []);
+  
+  console.log("user role, ", user?.role);
 
   if (!["CreditMember", "Admin"].includes(user?.role)) {
     return null; // hide menu for non-admins
@@ -64,6 +71,15 @@ export function AdminNav() {
             <span className="font-medium">Group Savings</span>
           </Link>
         </li>
+
+          <li>
+          <Link href="/admin/shareCap" className="flex items-center">
+            <FileSliders className="mr-2 h-4 w-4 text-primary" />
+            <span className="font-medium">Share on Capital</span>
+          </Link>
+        </li>
+
+        
 
         <li>
           <Link href="/admin/members" className="flex items-center">

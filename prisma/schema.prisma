@@ -36,6 +36,8 @@ enum ExpensesType{
   Refreshments
   others
   savingInterest
+  GroupsavingInterest
+  ShareOnCapitalInterest
   BankCharge
   transport
   rent
@@ -271,6 +273,7 @@ model GroupDeposit {
   deposited_at DateTime   @default(now())
   member_Id    Int
   group_id     Int
+  created_at  DateTime @default(now())
 
   member       Member     @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   group        GroupSaving @relation(fields: [group_id], references: [group_id])
@@ -329,6 +332,7 @@ model GroupWithdrawal {
   member_Id     Int
   group_id      Int
   created_at    DateTime  @default(now())
+  
 
   member        Member      @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
   group         GroupSaving @relation(fields: [group_id], references: [group_id])
@@ -387,6 +391,7 @@ model Raffles{
   withdrawals Decimal? @db.Decimal(12, 2) @default(0)
   created_at  DateTime @default(now())
   memberId Int?
+  Descreption String
   member   Member?  @relation(fields: [memberId], references: [member_Id], onDelete: Cascade)
 
 }

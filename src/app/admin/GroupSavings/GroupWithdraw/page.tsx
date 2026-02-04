@@ -16,7 +16,6 @@ interface Member {
 }
 
 
-
 export default function GroupWithdrawal() {
   const [groups, setGroups] = useState<Group[]>([]);
 
@@ -26,6 +25,7 @@ export default function GroupWithdrawal() {
   const [groupId, setGroupId] = useState("");
   const [memberId, setMemberId] = useState("");
   const [amount, setAmount] = useState("");
+  const [interest, setInterest] = useState("");
 
   const [message, setMessage] = useState("");
 
@@ -60,6 +60,7 @@ export default function GroupWithdrawal() {
       body: JSON.stringify({
         amount: Number(amount),
         memberId: Number(memberId),
+        interest: Number(interest),
       }),
     });
 
@@ -70,6 +71,7 @@ export default function GroupWithdrawal() {
       setAmount("");
       setMemberId("");
       setGroupId("");
+      setInterest("");
     } else {
       setMessage(data.error || "Withdrawal failed");
     }
@@ -122,6 +124,16 @@ export default function GroupWithdrawal() {
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          className="w-full border rounded px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Interest</label>
+        <input
+          type="number"
+          value={interest}
+          onChange={(e) => setInterest(e.target.value)}
           className="w-full border rounded px-3 py-2"
         />
       </div>

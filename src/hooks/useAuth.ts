@@ -11,33 +11,32 @@ export function useAuth(allowedRoles?: string[]) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = Cookies.get("token");
+    const fetchUser = async () => {
+      try{
+        const res = await fetch("/api/me", { credentials: "include" });
+        if (!res.ok) {
+          setLoading(false);
+          if (allowedRoles) router.push("/login");
+          return;
+      }
+      const data = await res.json();
+      const payload = data.user; 
 
-
-    if (!token) {
-      setLoading(false);
-      if (allowedRoles) router.push("/login");
-      return;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-
-      // Role check
-      if (allowedRoles && !allowedRoles.includes(payload.role )) {
+       if (allowedRoles && !allowedRoles.includes(payload.role)) {
         setLoading(false);
         router.push("/unauthorized");
         return;
-      }
-
-      setUser(payload);
-      setLoading(false);
-    } catch (err) {
-      localStorage.removeItem("token");
-      setLoading(false);
-      router.push("/login");
     }
-  }, []);
+    setUser(payload);
+    setLoading(false);
+  } catch (err) {
+    setLoading(false);
+    router.push("/");
+  }
+  };
+  fetchUser();
+},
+   [allowedRoles, router]);
 
   return { user, loading };
 }

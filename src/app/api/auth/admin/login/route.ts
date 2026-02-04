@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
   const { username, password } = await req.json();
@@ -19,18 +20,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const token = jwt.sign(
+  const token = jwt.sign(  
     { id: admin.admin_Id, email: admin.email, role: "Admin" },
     process.env.JWT_SECRET!,
     { expiresIn: "1h" }
   );
+console.log("Returning response:", admin);
 
-  const res = NextResponse.json({ success: true, admin });
 
-  res.headers.set(
-    "Set-Cookie",
-    `token=${token}; Path=/; Max-Age=3600`
-  );
 
-  return res;
+
+ (await cookies()).set({
+  name:"token",
+  value:token,
+  httpOnly:true,
+  path:"/",
+  maxAge:360,
+ });
+
+  return NextResponse.json({success: true, admin});
 }

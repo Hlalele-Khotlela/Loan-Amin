@@ -15,12 +15,13 @@ export function SavingsTransactionModal({
   onClose,
 }: SavingsTransactionModalProps) {
   const [amount, setAmount] = useState("");
+  const [interest, setInterest] = useState(""); // 👈 new state
   const [savings, setSavings] = useState<Savings | null>(null);
 
-  // Optional: Load savings info when modal opens
   useEffect(() => {
     if (isOpen) {
-        setAmount("");
+      setAmount("");
+      setInterest("");
       fetch(`/api/Savings/${savingsId}`)
         .then((res) => res.json())
         .then((data) => setSavings(data))
@@ -36,20 +37,19 @@ export function SavingsTransactionModal({
 
   async function handleSubmit() {
     try {
-        console.log("MODAL ID:", savingsId);
-
       const res = await fetch(`/api/Savings/${savingsId}/${mode.toLowerCase()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: Number(amount),
+          interest: mode === "WITHDRAWAL" ? Number(interest) : undefined, // 👈 send only if withdrawal
           action: mode,
         }),
       });
 
       if (!res.ok) {
-        const error = await res.json().catch(() => ({})); 
-        console.error("WITHDRAWAL ERROR:", error); 
+        const error = await res.json().catch(() => ({}));
+        console.error("Transaction error:", error);
         throw new Error(error.message || "Transaction failed");
       }
 
@@ -73,9 +73,8 @@ export function SavingsTransactionModal({
         {savings && (
           <>
             <p><strong>Savings Type:</strong> {savings.savings_type}</p>
-            
+            <p><strong>Savings Interest:</strong> {savings.interest.toString()}</p>
             <p><strong>Balance:</strong> {savings.amount.toString()}</p>
-
           </>
         )}
 
@@ -86,6 +85,17 @@ export function SavingsTransactionModal({
           placeholder="Enter amount"
           className="border border-gray-300 rounded px-2 py-1 w-full mt-3"
         />
+
+        {/* 👇 Only show interest field when WITHDRAWAL */}
+        {mode === "WITHDRAWAL" && (
+          <input
+            type="number"
+            value={interest}
+            onChange={(e) => setInterest(e.target.value)}
+            placeholder="Enter interest"
+            className="border border-gray-300 rounded px-2 py-1 w-full mt-3"
+          />
+        )}
 
         <div className="flex justify-end gap-2 mt-4">
           <button

@@ -2,13 +2,23 @@
 import { prisma } from "@/lib/prisma/prisma";
 import UserProfilePage from "./client";
 
-export default async function Page({
-  params}: {
-  params: Promise<{ memberId: string }>;
-}) {
-  const { memberId } = await params;
-  const member= await prisma.member.findUnique({
+
+
+export default async function Page({ params }: { params:Promise< { memberId: string } >}) {
+  // params.memberId is a string from the URL, convert to number
+  const {memberId} = await params;
+  console.log("member, ",memberId);
+
+ 
+
+  const member = await prisma.member.findUnique({
     where: { member_Id: Number(memberId) },
   });
-  return <UserProfilePage member_Id={Number(member?.member_Id)} />;
+
+  if (!member) {
+    return <div>Member not found</div>;
+  }
+
+  return <UserProfilePage member_Id={member?.member_Id} />;
 }
+

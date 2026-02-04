@@ -45,7 +45,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
           type: "Savings",
           action: t.type,
           amount: Number(t.amount),
-          date: new Date(t.date),
+          date: new Date(t.started_at),
         })
       )
     );
@@ -56,7 +56,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
           type: "Loan",
           action: t.type,
           amount: Number(t.amount),
-          date: new Date(t.date),
+          date: new Date(t.applied_at),
         })
       )
     );
@@ -67,7 +67,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
         group: d.group_id,
         groupName: d.group_name,
         amount: Number(d.amount),
-        date: new Date(d.date),
+        date: new Date(d.created_at),
       })
     );
 
@@ -75,7 +75,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
       feed.push({
         type: "Group Withdrawal",
         amount: Number(w.amount),
-        date: new Date(w.date),
+        date: new Date(w.created_at),
         group: w.group_id,
         groupName: w.group_name,
       })
@@ -85,28 +85,31 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
   };
 
   /* ---------------------------- data fetch ---------------------------- */
+console.log("member id is ", member_Id);
 
   useEffect(() => {
-    if (!token || !member_Id) return;
+    if ( !member_Id) return;
 
     const fetchMember = async () => {
+      if(!member_Id) return;
       try {
         const res = await fetch(`/api/user/${member_Id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
           cache: "no-store",
         });
 
         if (!res.ok) throw new Error("Failed to fetch member");
-
-        setMember(await res.json());
+        const data = await res.json()
+        setMember(data.member);
+        
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching member: ",err);
         setMember(null);
       }
     };
 
     fetchMember();
-  }, [member_Id, token]);
+  }, [member_Id]);
 
   if (!user || !member) return <p>Loading profile...</p>;
 
@@ -349,17 +352,17 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
                     <span>{d.group_id}</span>
                   </a>
                   <span>M {d.amount}</span>
-                  <span>{new Date(d.date).toLocaleDateString()}</span>
+                  <span>{new Date(d.created_at).toDateString()}</span>
                 </div>
               ))}
               {member.GroupWithdrawal?.map((w: any) => (
                 <div
-                  key={w.id}
+                  key={w.withdrawal_id}
                   className="flex justify-between border p-2 rounded mb-2"
                 >
                   <span>Withdrawal</span>
                   <span>M {w.amount}</span>
-                  <span>{new Date(w.date).toLocaleDateString()}</span>
+                  <span>{new Date(w.created_at).toDateString()}</span>
                 </div>
               ))}
             </div>
@@ -393,7 +396,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
                       <div className="text-right">
                         <p className="font-semibold">M {item.amount}</p>
                         <p className="text-sm text-muted-foreground">
-                          {item.date.toLocaleDateString()}
+                          {new Date(item.applied_at).toDateString()}
                         </p>
                       </div>
                     </div>

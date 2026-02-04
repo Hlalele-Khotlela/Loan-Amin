@@ -92,7 +92,7 @@ for (const shares of shareOnCapital){
     const intrest = shares.amount.mul(new Prisma.Decimal(0.005));
     const intrest2 = shares.Accumu_interest.mul(new Prisma.Decimal(0.005)); // balance × 1.02
     const totalInterest= intrest.add(intrest2);
-    const newBalance= shares.amount.add(totalInterest);
+    const newBalance= shares.amount.add(totalInterest).add(shares.Accumu_interest);
 
     await prisma.shareOnCapital.update({
       where:{
@@ -102,8 +102,13 @@ for (const shares of shareOnCapital){
         Current_interest:totalInterest,
         balance: newBalance,
         Accumu_interest:{increment:totalInterest}
+        
       }
     });
+
+    await prisma.expenses.create({
+      data:{type:"ShareOnCapitalInterest", amount:totalInterest }
+    })
     
 
 }

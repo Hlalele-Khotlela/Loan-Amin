@@ -28,13 +28,28 @@ export async function POST(request: Request) {
       by: ["member_Id"],
       where: { group_id: group.group_id },
       _sum: { amount: true },
+      
     });
 
+   
+    
+
     // Build member totals
-    const memberWithTotals = group.members.map((m) => {
+    const memberWithTotals = await Promise.all(
+
+     group.members.map(async (m) => {
+
       const dep = deposits.find((d) => d.member_Id === m.member_Id)?._sum.amount || 0;
       const wit = withdrawals.find((w) => w.member_Id === m.member_Id)?._sum.amount || 0;
-      const netContribution = new Prisma.Decimal(dep).sub(new Prisma.Decimal(wit));
+
+      const prevAccoumulatedInterest= await prisma.memberInterest.findFirst({
+        where:{member_Id: m.member_Id, group_Id: group.group_id},
+        orderBy:{calculatedAt: "desc"}
+      });
+      const memberInterest= new Prisma.Decimal(prevAccoumulatedInterest?.AccumulatedInterest?? 0);
+      const InterestDep = memberInterest.add(dep);
+
+      const netContribution =InterestDep.sub(new Prisma.Decimal(wit));
 
       return {
         member_Id: m.member_Id,
@@ -42,7 +57,8 @@ export async function POST(request: Request) {
         totalWithdrawals: Number(wit),
         netContribution,
       };
-    });
+    })
+    );
 
     // Calculate group net + interest
     const totalGroupNet = memberWithTotals.reduce(
@@ -100,6 +116,13 @@ export async function POST(request: Request) {
         interest: group.interest.add(intrest),
       },
     });
+
+    await prisma.expenses.create({
+      data:{
+        type: "GroupsavingInterest",
+        amount: intrest
+      }
+    })
 
     // Record transaction
     await prisma.groupSavingsTransaction.create({

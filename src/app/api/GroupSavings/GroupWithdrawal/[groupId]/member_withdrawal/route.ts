@@ -10,11 +10,13 @@ export async function POST(
     const { groupId } = await params;
     const id = Number(groupId);
 
-    const { amount, memberId } = await req.json();
+    const { amount, memberId, interest } = await req.json();
+    
+    const witAmount = new Prisma.Decimal(amount);
+    const witInterest= new Prisma.Decimal(interest);
+    const totalWit = witAmount.add(witInterest);
 
-    if (!amount || amount <= 0) {
-      return NextResponse.json({ message: "Invalid amount" }, { status: 400 });
-    }
+    
 
     if (!memberId) {
       return NextResponse.json({ message: "Member ID is required" }, { status: 400 });
@@ -37,10 +39,19 @@ export async function POST(
       );
     }
 
+    // check for interest
+
+    if(group.interest < interest){
+      return NextResponse.json(
+        { message: "Insufficient group balance" },
+        { status: 400 }
+      );
+    }
+
     // 3. Create withdrawal record
     const withdrawal = await prisma.groupWithdrawal.create({
       data: {
-        amount,
+        amount: totalWit,
         member_Id: memberId,
         group_id: id,
       },
@@ -67,8 +78,18 @@ export async function POST(
       where: { group_id: id },
       data: {
         total_Savings: dep,
+        interest:{decrement: witInterest},
         current_total: dep.sub(withdrw),
       },
+    });
+
+    // update member interest
+
+    await prisma.memberInterest.updateMany({
+      where:{member_Id: Number(memberId)},
+      data:{
+        AccumulatedInterest: {decrement: witInterest}
+      }
     });
 
     // transaction record

@@ -25,6 +25,8 @@ export function DepositModal({ isOpen, savingsId, onClose }: DepositModalProps) 
           <>
             <p><strong>Savings Type:</strong> {savings.savings_type}</p>
             <p><strong>Balance:</strong> {savings.amount.toString()}</p>
+            <p><strong>Interest:</strong> {savings.interest.toString()}</p>
+
           </>
         )}
 
