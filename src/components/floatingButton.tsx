@@ -7,7 +7,7 @@ export function FloatingAdminButton() {
   const { user } = useAuth();
 
   // Only show for Credit users
-  if (user?.role !== "CreditMember") return null;
+  if ((user?.role !== "CreditMember") &&( user?.role !== "Audit")) return null;
 
   return (
     <Link

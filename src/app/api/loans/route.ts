@@ -10,7 +10,7 @@ export async function GET(req: Request) {
 
   try {
     const where: any = {
-      status: "active",
+      
     };
 
     // Filter by loan type

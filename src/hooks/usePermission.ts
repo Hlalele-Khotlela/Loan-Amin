@@ -17,6 +17,7 @@ export function usePermission(): PermissionSet {
       canViewLoans: false,
       canApproveLoans: false,
       canViewReports: false,
+      canCommentOnLoans:false,
     };
   }
 

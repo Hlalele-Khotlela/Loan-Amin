@@ -54,7 +54,7 @@ export default function Navbar() {
     <nav className="w-full border-b bg-white sticky top-0 z-50">
       <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
         <Link href="/" className="text-xl font-bold text-primary">
-          LoanView
+          Treasure Hunters
         </Link>
 
         <div className="hidden md:flex items-center gap-6">

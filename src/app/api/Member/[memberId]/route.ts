@@ -44,37 +44,18 @@ export async function DELETE(_: Request, context: {params: Promise<{memberId: st
   const memberIdInt= parseInt(memberId, 10);
 
 
-   await prisma.loanTransaction.deleteMany({
-    where:{loan: {member_Id:memberIdInt}}
+
+  await prisma.loan.updateMany({
+    where:{member_Id: memberIdInt},
+    data:{status:"inactive"}
   });
 
-  await prisma.loan.deleteMany({
-    where:{member_Id: memberIdInt}
+   await prisma.savings.updateMany({
+    where:{member_Id: memberIdInt},
+    data:{status:"inactive"}
   });
 
-   await prisma.savings.deleteMany({
-    where:{member_Id: memberIdInt}
-  });
-
-   await prisma.savingsTransaction.deleteMany({
-    where:{saving: {member_Id:memberIdInt}}
-  });
-
-   await prisma.groupDeposit.deleteMany({
-    where:{member_Id: memberIdInt}
-  });
-
-   await prisma.groupWithdrawal.deleteMany({
-    where:{member_Id: memberIdInt}
-  });
-
-   await prisma.loanrequest.deleteMany({
-    where:{member_Id: memberIdInt}
-  });
-
-   await prisma.groupSavingsTransaction.deleteMany({
-    where:{member_Id: memberIdInt}
-  });
+  
 
   const groups = await prisma.groupSaving.findMany({
     where: {
@@ -109,8 +90,9 @@ export async function DELETE(_: Request, context: {params: Promise<{memberId: st
     })
   }
 
-  await prisma.member.delete({
-    where:{member_Id:memberIdInt}
+  await prisma.member.update({
+    where:{member_Id:memberIdInt},
+    data:{Status:"inactive"}
     
   });
   return NextResponse.json({success: true});

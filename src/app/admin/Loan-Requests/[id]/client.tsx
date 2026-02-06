@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function LoanRequestDetails() {
   const { id } = useParams();
@@ -12,6 +13,8 @@ export default function LoanRequestDetails() {
   const [loan, setLoan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const {user} = useAuth();
+ const { canApproveLoans, canManageStaff, canViewSavings, canCommentOnLoans } = usePermission();
+
   
 
   useEffect(() => {
@@ -138,6 +141,7 @@ export default function LoanRequestDetails() {
   )}
 
   {/* Add comment form */}
+  {canCommentOnLoans && (
   <form
     onSubmit={async (e) => {
       e.preventDefault();
@@ -172,6 +176,7 @@ export default function LoanRequestDetails() {
       Post
     </button>
   </form>
+  )}
 </div>
 
  
@@ -182,6 +187,7 @@ export default function LoanRequestDetails() {
           <div className="border rounded-lg p-4 bg-gray-50">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">Actions</h2>
             <div className="flex gap-4">
+              {canApproveLoans &&(
               <button
                 onClick={() => handleAction("approve")}
                 disabled={commentsCount < 3}
@@ -189,6 +195,9 @@ export default function LoanRequestDetails() {
               >
                 Approve
               </button>
+              )}
+
+              {canApproveLoans && (
               <button
                 onClick={() => handleAction("reject")}
                 disabled={commentsCount < 3}
@@ -196,6 +205,7 @@ export default function LoanRequestDetails() {
               >
                 Reject
               </button>
+              )}
             </div>
             {commentsCount < 3 && (
               <p className="mt-2 text-sm text-gray-500">

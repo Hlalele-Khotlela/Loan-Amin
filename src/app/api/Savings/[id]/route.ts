@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma/prisma";
+import { Decimal } from "@prisma/client/runtime/client";
 import { NextResponse } from "next/server";
-import { Prisma } from "@/generated/prisma/browser";
+
 
 export async function GET(
   req: Request,
@@ -54,10 +55,10 @@ export async function PUT(req: Request, context: {params: Promise<{id: string}>}
   const SavingsId = parseInt(id, 10);
   const body= await req.json();
   
-  const amount= new Prisma.Decimal(body.amount);
+  const amount= new Decimal(body.amount);
   const intresRate = 0.01;
-  const minAmount = new Prisma.Decimal(body.minAmount);
-  const intrest= new Prisma.Decimal(body.interest);
+  const minAmount = new Decimal(body.minAmount);
+  const intrest= new Decimal(body.interest);
   const total = amount.add(intrest)
  
 

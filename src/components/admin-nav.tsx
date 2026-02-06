@@ -29,7 +29,7 @@ fetchUser();
   
   console.log("user role, ", user?.role);
 
-  if (!["CreditMember", "Admin"].includes(user?.role)) {
+  if (!["CreditMember", "Admin", "Audit"].includes(user?.role)) {
     return null; // hide menu for non-admins
   }
 
@@ -120,6 +120,12 @@ fetchUser();
           <Link href="/admin/EmergencyFund" className="flex items-center">
             <FileSliders className="mr-2 h-4 w-4 text-primary" />
             <span className="font-medium">Emergency Fund</span>
+          </Link>
+        </li>
+        <li>
+          <Link href="/admin/Raffles" className="flex items-center">
+            <FileSliders className="mr-2 h-4 w-4 text-primary" />
+            <span className="font-medium">Raffles</span>
           </Link>
         </li>
 

@@ -1,6 +1,6 @@
 import { prisma } from "../../../../../../lib/prisma/prisma";
 import { NextResponse } from "next/server";
-import { Prisma } from "@/generated/prisma/browser";
+import { Decimal } from "@prisma/client/runtime/client"; 
 
 export async function POST(
   req: Request,
@@ -12,8 +12,8 @@ export async function POST(
 
     const { amount, memberId, interest } = await req.json();
     
-    const witAmount = new Prisma.Decimal(amount);
-    const witInterest= new Prisma.Decimal(interest);
+    const witAmount = new Decimal(amount);
+    const witInterest= new Decimal(interest);
     const totalWit = witAmount.add(witInterest);
 
     
@@ -70,8 +70,8 @@ export async function POST(
     
             })
 
-     const dep = new Prisma.Decimal(deposits._sum.amount ?? 0);
-        const withdrw = new Prisma.Decimal(withdrawals._sum.amount ?? 0);
+     const dep = new Decimal(deposits._sum.amount ?? 0);
+      const withdrw = new Decimal(withdrawals._sum.amount ?? 0);
 
 
         await prisma.groupSaving.update({

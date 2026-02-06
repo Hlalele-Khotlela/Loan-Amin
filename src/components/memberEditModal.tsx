@@ -123,7 +123,7 @@ export function MemberModal({ member, mode, onClose, onConfirm }: MemberModalPro
               >
                 <option value="">Select Role</option>
                 <option value="User">User</option>
-                <option value="Admin">Admin</option>
+                <option value="Audit">Audit</option>
                 <option value="CreditMember">Credit</option>
               </select>
             </div>

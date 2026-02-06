@@ -22,6 +22,7 @@ enum IncomesType{
   BankChargeContribution
   BadDebtsRecovered
   stokvel
+  Raffle
 }
 enum LoanApllication{
   revolve
@@ -72,7 +73,7 @@ enum MemberStatus{
 }
 
 enum MemberRole{
-  Admin
+  Audit
   User
   CreditMember
 }

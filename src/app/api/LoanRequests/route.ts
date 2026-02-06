@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
     try {
       const where: any = {
-        status:"Pending",
+        
       };
       if (loan_type && loan_type !== "all") {
         where.loan_type = {

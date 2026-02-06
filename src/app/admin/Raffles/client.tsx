@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import TransactionModal from "@/components/raffleModal";
-
+import { usePermission } from "@/hooks/usePermission";
 type RaffleTransaction = {
   id: string;
   created_at: string;
@@ -17,6 +17,8 @@ export default function Raffle() {
   const [loading, setLoading] = useState(true);
   const [isDepositOpen, setDepositOpen] = useState(false);
   const [isWithdrawalOpen, setWithdrawalOpen] = useState(false);
+  const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
+  
 
 
 const handleTransaction = async (data: { type: string; amount: number; description: string }) => { 
@@ -59,16 +61,20 @@ const handleTransaction = async (data: { type: string; amount: number; descripti
   return (
     <div className="p-6">
       <div className="overflow-x-auto my-4">
+        {canApproveLoans &&(
         <button onClick={() => setDepositOpen(true)}
           className="px-4 py-2 bg-green-600 text-white rounded"
         >
           New Deposit
         </button>
+        )}
+        {canApproveLoans && (
         <button onClick={() => setWithdrawalOpen(true)}
           className="px-4 py-2 mx-4 bg-red-600 text-white rounded"
         >
           New Withdrawal
         </button>
+        )}
       </div>
        {/* Deposit Modal */}
       <TransactionModal isOpen={isDepositOpen} onClose={() => setDepositOpen(false)}

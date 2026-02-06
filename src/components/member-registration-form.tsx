@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { usePermission } from "@/hooks/usePermission";
 import {
   Form,
   FormField,
@@ -37,6 +38,7 @@ const memberSchema = z.object({
 type MemberFormValues = z.infer<typeof memberSchema>;
 
 export default function CreateMemberForm() {
+   const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
   const form = useForm<MemberFormValues>({
     resolver: zodResolver(memberSchema),
     defaultValues: {
@@ -108,6 +110,7 @@ export default function CreateMemberForm() {
   };
 
   return (
+    
     <Card className="max-w-lg mx-auto shadow-lg rounded-xl bg-gradient-to-br from-white to-gray-50 hover:shadow-2xl transition-shadow duration-300">
       <CardHeader className="border-b pb-4">
         <CardTitle className="text-2xl font-extrabold text-blue-700 tracking-wide">
@@ -118,6 +121,7 @@ export default function CreateMemberForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {canApproveLoans && (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Member ID */}
@@ -269,6 +273,7 @@ export default function CreateMemberForm() {
             </button>
           </form>
         </Form>
+        )}
       </CardContent>
     </Card>
   );

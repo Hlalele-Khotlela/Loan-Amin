@@ -79,6 +79,7 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
            <h2 className="text-lg font-semibold">Member Information</h2>
         <p><strong>Phone:</strong> {member.phone}</p>
         <p><strong>Joined:</strong> {new Date(member.JoinedAt).toDateString()}</p>
+        <p><strong>Status:</strong> {member.Status}</p>
 
         </div>
         <div className="gap-8">

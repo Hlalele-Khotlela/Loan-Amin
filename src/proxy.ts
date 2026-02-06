@@ -3,6 +3,16 @@ import type { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma/prisma";
 
+function redirect(url: URL, pathname: string) {
+  url.pathname = pathname;
+  return NextResponse.redirect(url);
+}
+
+function ownsResource(path: string, userMemberId: string, prefix: string) {
+  const segments = path.split("/");
+  const memberId = segments[3]; // /admin/{prefix}/[memberId]/...
+  return memberId === userMemberId;
+}
 
 export async function proxy(req: NextRequest) {
   const token =
@@ -12,95 +22,60 @@ export async function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   const path = req.nextUrl.pathname;
 
-  if (!token) {
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
+  if (!token) return redirect(url, "/login");
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as jwt.JwtPayload;
-    const role = payload.role;            // "User" | "Admin" | "CreditMember"
+    const role = payload.role as "User" | "Admin" | "CreditMember" | "Audit" | "Staff";
     const userMemberId = String(payload.memberId);
 
-    // Helper: ownership check
-    function ownsResource(path: string, prefix: string) {
-      const segments = path.split("/");
-      const memberId = segments[3]; // /admin/{prefix}/[memberId]/...
-      return memberId === userMemberId;
-    }
-
-    // Loans
+    // --- Route Guards ---
     if (path.startsWith("/admin/Loans")) {
-      if (role === "Admin") return NextResponse.next();
-      if ((role === "User" || role === "CreditMember") && ownsResource(path, "Loans")) {
-        return NextResponse.next();
-      }
-      url.pathname = "/unauthorized";
-      return NextResponse.redirect(url);
+      if (["Admin", "CreditMember", "Audit"].includes(role)) return NextResponse.next();
+      if (role === "User" && ownsResource(path, userMemberId, "Loans")) return NextResponse.next();
+      return redirect(url, "/unauthorized");
     }
 
-    // Savings
     if (path.startsWith("/admin/Savings")) {
       if (role === "Admin") return NextResponse.next();
-      if ((role === "User" || role === "CreditMember") && ownsResource(path, "Savings")) {
+      if (["User", "CreditMember", "Audit"].includes(role) && ownsResource(path, userMemberId, "Savings")) {
         return NextResponse.next();
       }
-      url.pathname = "/unauthorized";
-      return NextResponse.redirect(url);
+      return redirect(url, "/unauthorized");
     }
 
-    // GroupSavings
     if (path.startsWith("/admin/dashboard/groups")) {
-      const segments = path.split("/");
-      const groupId = segments[4]; // /admin/dashboard/groups/[groupId]/...
-      if (role === "Admin" || role === "CreditMember"){ 
-        return NextResponse.next();
-      }
+      const groupId = path.split("/")[4];
+      if (["Admin", "CreditMember", "Audit"].includes(role)) return NextResponse.next();
 
-      if ((role === "User" || role === "CreditMember") ) {
+      if (["User", "CreditMember", "Audit"].includes(role)) {
         const membership = await prisma.groupSaving.findFirst({
           where: {
             group_id: Number(groupId),
-            members: {
-              some: {
-                member_Id: Number(userMemberId),
-              },
-            },
+            members: { some: { member_Id: Number(userMemberId) } },
           },
         });
-        if (membership){
-          return NextResponse.next();
-        }
-        return NextResponse.next();
-
+        if (membership) return NextResponse.next();
+        return redirect(url, "/unauthorized");
       }
-      url.pathname = "/unauthorized";
-      return NextResponse.redirect(url);
     }
 
-    // General admin routes (other than Loans/Savings/GroupSavings)
-    if (path.startsWith("/admin") && role !== "Admin" && role !== "CreditMember") {
-      url.pathname = "/unauthorized";
-      return NextResponse.redirect(url);
+    if (path.startsWith("/admin") && !["Admin", "CreditMember", "Audit"].includes(role)) {
+      return redirect(url, "/unauthorized");
     }
 
-    // Staff routes
-    if (path.startsWith("/staff") && role !== "Admin" && role !== "Staff") {
-      url.pathname = "/unauthorized";
-      return NextResponse.redirect(url);
+    if (path.startsWith("/staff") && !["Admin", "Staff"].includes(role)) {
+      return redirect(url, "/unauthorized");
     }
 
-    // User routes
-    if (path.startsWith("/user") && !["User", "CreditMember", "Admin"].includes(role)) {
-      url.pathname = "/unauthorized";
-      return NextResponse.redirect(url);
+    if (path.startsWith("/user") && !["User", "CreditMember", "Audit", "Admin"].includes(role)) {
+      return redirect(url, "/unauthorized");
     }
 
     return NextResponse.next();
   } catch (err) {
     console.error("JWT verification failed:", err);
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    return redirect(url, "/login");
   }
 }
 
