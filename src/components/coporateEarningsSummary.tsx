@@ -26,14 +26,6 @@ export default function CooporateSummary({ cooporate }: { cooporate: CooporateTy
         </p>
       </div>
 
-      
-
-      <div>
-        <h3 className="text-gray-500">Profit</h3>
-        <p className="text-xl font-bold text-blue-600">
-          R {Number(cooporate?.profit).toFixed(2)}
-        </p>
-      </div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export default async function MemberProfile({
   const { memberId } = await params;
   const mymemberId = parseInt(memberId, 10);
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:9002";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const member = await prisma.member.findUnique({
     where: {

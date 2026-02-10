@@ -29,7 +29,8 @@ export default function TransactionModal({ isOpen, onClose, onSuccess }:  Transa
       onClose();
       onSuccess();
     } else {
-      alert("Error saving transaction");
+       const error = await res.json();
+        alert(error.error ?? "Error saving transaction");
     }
   }
 
@@ -52,7 +53,7 @@ export default function TransactionModal({ isOpen, onClose, onSuccess }:  Transa
               
   
               <option value="deposit">Deposit</option>
-              <option value="withdraw">Withdrawal</option>
+              <option value="withdrawal">Withdrawal</option>
             </select>
           </div>
 

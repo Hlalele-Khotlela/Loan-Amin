@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import type { SafeDashboardData } from "@/lib/dashboard/aggregation";
 import Link from "next/link";
-import LoanSavingsCharts from "./LoanSavingCharts";
+
 import CooporateSummary from "@/components/coporateEarningsSummary";
 import { CooporateTypes } from "@/types/CooporateTypes";
 
@@ -34,8 +34,6 @@ type LoanByTypeAndStatus = {
       savings_id: number };
      };
 
-     type DashboardData = { loansByTypeAndStatus: LoanByTypeAndStatus[]; savingsByStatus: SavingsByStatus[]; };
-
 export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) {
    const [earnings, setEarnings] = useState<CooporateTypes | null>(null); 
    const [loading, setLoading] = useState(true);
@@ -65,8 +63,8 @@ export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) 
       <div className="grid grid-cols-3 gap-x-4 my-3 mt-12">
         
         <Link className="p-4 bg-white shadow rounded-lg border hover:shadow-md transition" href="#">
-            <h2 className="text-lg font-semibold">Loans</h2>
-            <p>Total Borrowed: {data?.loans._sum.Principal?.toString() ?? "0"}</p>
+      <h2 className="text-lg font-semibold">Loans</h2>
+      <p>Total Borrowed: {data?.loans._sum.Principal?.toString() ?? "0"}</p>
       <p>Total Payable: {data?.loans._sum.totals_payeable?.toString() ?? "0"}</p>
       <p>Outstanding Balance: {data?.loans._sum.balance?.toString() ?? "0"}</p>
 
@@ -99,23 +97,7 @@ export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) 
       ))}
       </Link>
 
-      {/* <Link className=" p-4 bg-white shadow rounded-lg border hover:shadow-md transition" href="#">
-       <h2 className="text-lg font-semibold">Loan Transactions</h2>
-      {data?.loanTransactions.map((tx:any) => (
-        <p key={tx.type}>
-         Total {tx.type}: {tx._sum.amount?.toString() ?? "0"}
-        </p>
-      ))}
-      </Link> */}
-
-      {/* <Link className=" p-4 bg-white shadow rounded-lg border hover:shadow-md transition" href="#">
-      <h2 className="text-lg font-semibold">Group Transactions</h2>
-      {data?.groupTransactions.map((tx:any) => (
-        <p key={tx.type}>
-          {tx.type}: {tx._sum.amount?.toString() ?? "0"}
-        </p>
-      ))}
-      </Link> */}
+ 
 
       <Link className=" p-4 bg-white shadow rounded-lg border hover:shadow-md transition " href="#" >
       <h2 className="text-lg font-semibold">Group</h2>
@@ -126,23 +108,7 @@ export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) 
      
       </Link>
 
-      {/* <Link className="p-4 bg-white shadow rounded-lg border hover:shadow-md transition my-6" href="#">
-        <h2 className="text-lg font-semibold">Savings Transactions</h2>
-
-        {data?.savingsSummary.map((sx:any) => (
-        <p key={sx.type}>
-          {sx.type}: {sx._sum.amount?.toString() ?? "0"}
-        </p>
-      ))}
-
-      </Link> */}
-      
-      <LoanSavingsCharts
-      loansByTypeAndStatus={data?.loansByTypeAndStatus ?? []}
-      savingsByStatus={data?.savingsByStatus ?? []}
-      />
-
-      
+    
     </div>
     </div>
   );

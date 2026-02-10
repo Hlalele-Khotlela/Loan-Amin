@@ -9,17 +9,20 @@ import GroupClient from "./groupCient";
 interface PageProps {
      params: { groupId: string; };
      } 
-export default async function GroupDashboard({ params, }: { params: Promise<{ groupId: string }>; }) { const { groupId } = await params; // <-- this is correct
-const baseUrl = "http://localhost:9002"; // Adjust based on your environment     
-const res = await fetch(new URL(`/api/GroupSavings/${groupId}`, baseUrl), { 
+export default async function GroupDashboard({ params, }: { params: Promise<{ groupId: string }>; 
+}) { const { groupId } = await params;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!; // Adjust based on your environment     
+const res = await fetch(`${baseUrl}/api/GroupSavings/${groupId}`,  { 
         cache: "no-store", });
 
   const group = await res.json();
-  const members = await fetch (new URL(`/api/Member`, baseUrl), {
+
+  // fetch members
+  const membersRes = await fetch (`${baseUrl}/api/Member`, {
     cache: "no-store",
   })
 
-const allMembers = await members.json();
+const allMembers = await membersRes.json();
 
 
 

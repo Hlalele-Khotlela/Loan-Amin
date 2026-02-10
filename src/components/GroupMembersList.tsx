@@ -1,4 +1,7 @@
+"use client";
+import { useState } from "react";
 import { GroupSummaryType } from "@/types/GroupSummaryTypes";
+import EditAccumulatedInterestModal from "@/components/memberInterestModal";
 
 export default function MembersList({
   members,
@@ -7,6 +10,8 @@ export default function MembersList({
   members?: GroupSummaryType["members"];
   groupId: number;
 }) {
+  const [selectedInterest, setSelectedInterest] = useState<any | null>(null);
+
   return (
     <div className="bg-white p-6 rounded-xl shadow">
       <h2 className="text-lg font-bold mb-4">Members</h2>
@@ -20,14 +25,17 @@ export default function MembersList({
             <th>Member Withdrawal</th>
             <th>Member Interest</th>
             <th>Member Balance</th>
+            <th>Edit</th>
           </tr>
         </thead>
 
         <tbody>
           {members?.map((m) => {
-            const latestInterest = m.MemberInterest
-              ?.filter((mi: any) => mi.group_Id === groupId) // 👈 filter by group
-              .slice(-1)[0]?.AccumulatedInterest || 0;
+            const latestInterestRecord = m.MemberInterest
+              ?.filter((mi: any) => mi.group_Id === groupId)
+              .slice(-1)[0];
+
+            const latestInterest = latestInterestRecord?.AccumulatedInterest || 0;
 
             return (
               <tr key={m.member_Id} className="border-t">
@@ -37,11 +45,36 @@ export default function MembersList({
                 <td>{Number(m.totalWithdrawn).toFixed(2)}</td>
                 <td>{Number(latestInterest).toFixed(2)}</td>
                 <td>{Number(m.balance).toFixed(2)}</td>
+                <td>
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      setSelectedInterest({
+                        id: latestInterestRecord.id,
+                        accumulated: Number(latestInterestRecord.AccumulatedInterest),
+                      })
+                    }
+                  >
+                    Edit
+                  </button>
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+
+      {selectedInterest && (
+        <EditAccumulatedInterestModal
+          interestId={selectedInterest.id}
+          accumulated={selectedInterest.accumulated}
+          onClose={() => setSelectedInterest(null)}
+          onSave={(updated) => {
+            console.log("Updated interest:", updated);
+            setSelectedInterest(null);
+          }}
+        />
+      )}
     </div>
   );
 }

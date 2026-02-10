@@ -2,9 +2,9 @@ import GroupCard from "../../../../components/GroupCard";
 import GroupActs from "@/components/group-acts";
 
 export default async function GroupsPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:9002";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 // src\app\api\GroupSavings\[groupId]\route.ts
-  const res = await fetch(new URL("/api/GroupSavings/AllGroupsDisp", baseUrl), {
+  const res = await fetch(`${baseUrl}/api/GroupSavings/AllGroupsDisp`,  {
     cache: "no-store",
   });
 

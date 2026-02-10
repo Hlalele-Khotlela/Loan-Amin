@@ -107,13 +107,14 @@ const handleTransaction = async (data: { type: string; amount: number; descripti
                 <td className="px-4 py-2 border">
                   {new Date(t.created_at).toLocaleDateString()}
                 </td>
-                <td className="px-4 py-2 border">{t.Descreption}</td>
+                
                 <td className="px-4 py-2 border text-green-600">
                   {Number(t.deposit > 0) ? Number(t.deposit).toFixed(2) : "-"}
                 </td>
                 <td className="px-4 py-2 border text-red-600">
                   {Number(t.withdrawals > 0) ? Number(t.withdrawals).toFixed(2) : "-"}
                 </td>
+                <td className="px-4 py-2 border">{t.Descreption}</td>
                 
                 <td className="px-4 py-2 border font-semibold">
                   {Number(t.balance).toFixed(2)}

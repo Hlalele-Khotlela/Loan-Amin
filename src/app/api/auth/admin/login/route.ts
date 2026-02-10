@@ -35,7 +35,7 @@ console.log("Returning response:", admin);
   value:token,
   httpOnly:true,
   path:"/",
-  maxAge:360,
+  maxAge:3600,
  });
 
   return NextResponse.json({success: true, admin});

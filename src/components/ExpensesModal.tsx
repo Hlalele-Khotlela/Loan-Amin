@@ -70,7 +70,7 @@ export default function ExpensesModal({ isOpen, onClose, onSuccess }: any) {
             <option value="BankCharge">Bank Charge</option>
             <option value="transport">Transport</option>
             <option value="sittingAllowence">Sitting Allowence</option>
-            <option value="Others">Other</option>
+            <option value="others">Other</option>
           </select>
           <button
             type="submit"

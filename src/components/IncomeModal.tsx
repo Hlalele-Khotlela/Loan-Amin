@@ -54,11 +54,12 @@ export default function IncomeModal({ isOpen, onClose, onSuccess }: any) {
           >
             <option value="">Select Income Type</option>
             <option value="Penalty">Penalty</option>
-            <option value="Others">Others</option>
+            <option value="others">Others</option>
             <option value="LoanInterest">Loan Interest</option>
             <option value="BankChargeContribution">Bank Charge Contribution</option>
             <option value="BadDebtsRecovered">Bad Debts Recovered</option>
             <option value="stokvel">Stokvel</option>
+            <option value="Raffle">Raffle</option>
          
           </select>
           <button

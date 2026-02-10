@@ -22,7 +22,7 @@ export async function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   const path = req.nextUrl.pathname;
 
-  if (!token) return redirect(url, "/login");
+  if (!token) return redirect(url, "/");
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as jwt.JwtPayload;

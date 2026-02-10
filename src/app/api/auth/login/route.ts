@@ -15,6 +15,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    if(member.Status !== "active"){
+      return NextResponse.json({error: "Account is not active"}, {status:401})
+    }
+
     // ✅ Sign JWT
     const token = jwt.sign(
       {
