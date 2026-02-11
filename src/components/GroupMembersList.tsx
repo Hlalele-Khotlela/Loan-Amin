@@ -24,7 +24,7 @@ export default function MembersList({
             <th>Member Deposit</th>
             <th>Member Withdrawal</th>
             <th>Member Interest</th>
-            <th>Member Balance</th>
+            
             <th>Edit</th>
           </tr>
         </thead>
@@ -44,8 +44,9 @@ export default function MembersList({
                 <td>{Number(m.totalDeposited).toFixed(2)}</td>
                 <td>{Number(m.totalWithdrawn).toFixed(2)}</td>
                 <td>{Number(latestInterest).toFixed(2)}</td>
-                <td>{Number(m.balance).toFixed(2)}</td>
+                
                 <td>
+                  {latestInterestRecord ? (
                   <button
                     className="text-blue-600 underline"
                     onClick={() =>
@@ -57,6 +58,10 @@ export default function MembersList({
                   >
                     Edit
                   </button>
+                  ) : (
+                    <span className="text-gray-400">No interest record</span>
+
+                  )}
                 </td>
               </tr>
             );

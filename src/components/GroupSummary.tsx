@@ -1,7 +1,7 @@
 import { GroupSummaryType } from "@/types/GroupSummaryTypes";
 export default function GroupSummary({ group }: { group: GroupSummaryType }) {
   return (
-    <div className="grid grid-cols-5 gap-2 bg-white p-6 rounded-xl shadow mt-6">
+    <div className="grid grid-cols-4 gap-2 bg-white p-6 rounded-xl shadow mt-6">
       <div>
         <h3 className="text-gray-500">Group Name</h3>
         <p className="text-xl font-bold">{group.name}</p>
@@ -28,12 +28,7 @@ export default function GroupSummary({ group }: { group: GroupSummaryType }) {
 
       
 
-      <div>
-        <h3 className="text-gray-500">Combined Total(total & interest)</h3>
-        <p className="text-xl font-bold text-blue-600">
-          R {Number(group.current_total).toFixed(2)}
-        </p>
-      </div>
+      
     </div>
   );
 }

@@ -16,9 +16,6 @@ export async function POST(
     const savingId = await params;
     const savingsId = Number((await params).id)
 
-    
-
-    
 
     if (isNaN(savingsId)) {
       return NextResponse.json(
@@ -72,10 +69,10 @@ export async function POST(
     if(savings.interest < interest){
       return NextResponse.json({message: "Insufficient balance"}, {status: 400});
     }
-
+ 
     // Update balance
     const updated = await prisma.savings.update({
-      where: { savings_id: savingsId },
+      where: { savings_id: savingsId},
       data: {
         amount: savings.amount.sub(amount),
         interest: savings.interest.sub(interest),

@@ -88,7 +88,8 @@ export async function POST(
     await prisma.memberInterest.updateMany({
       where:{member_Id: Number(memberId)},
       data:{
-        AccumulatedInterest: {decrement: witInterest}
+        AccumulatedInterest: {decrement: witInterest, }
+        
       }
     });
 
