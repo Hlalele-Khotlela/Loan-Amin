@@ -1,5 +1,25 @@
 import { prisma } from "@/lib/prisma/prisma";
 import SavingsClient from "./SavingClient";
+type SerializedTransaction = {
+   id: number; 
+   amount: string; 
+   type: string; 
+   createdAt: Date;
+   };
+
+type SerializedSavings = {
+  savings_id: number;
+  member_Id: number;
+  savings_type: string;
+  status: string;
+  started_at: Date;
+  amount: string;
+  interest: string;
+  total: string;
+  min_amount: string;
+  transactions: SerializedTransaction[];
+};
+
 
 export default async function SavingsTransactions({
   params,
@@ -26,7 +46,7 @@ export default async function SavingsTransactions({
   if (!savings) {
     return <p>Saving not found</p>;
   }
-  function SerializeSavings(savings: any){
+  function SerializeSavings(savings: any): SerializedSavings{
     return{
       ...savings, 
       amount: savings.amount?.toString() ?? "0.00",

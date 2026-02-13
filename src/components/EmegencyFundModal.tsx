@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { toast } from '@/hooks/use-toast';
 type TransactionModalProps = { isOpen: boolean; onClose: () => void; onSuccess: () => void;} // 👈 add this }; 
 
 export default function TransactionModal({ isOpen, onClose, onSuccess }:  TransactionModalProps) {
@@ -23,14 +24,18 @@ export default function TransactionModal({ isOpen, onClose, onSuccess }:  Transa
     });
 
     if (res.ok) {
-      alert(`${type} recorded successfully!`);
+      
       setAmount("");
       setDescription("");
+      toast({title: `${type} Response Submitted!`,
+                description: "Transaction Successful.",});
       onClose();
       onSuccess();
     } else {
        const error = await res.json();
-        alert(error.error ?? "Error saving transaction");
+        
+        toast({title: "Error saving transaction",
+                description: "Transaction Failed.",});
     }
   }
 

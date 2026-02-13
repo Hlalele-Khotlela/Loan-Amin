@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from '@/hooks/use-toast';
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -27,6 +28,8 @@ export default function TransactionModal({
     onSubmit({ type, amount, description });
     setAmount(0);
     setDescription("");
+    toast({title: "Response Submitted!",
+                description: "Transaction Successful.",});
     onClose();
   };
 

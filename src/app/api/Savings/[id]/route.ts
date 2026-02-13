@@ -22,7 +22,18 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(savings);
+    // convert ro plain
+
+    const plainSavings = {
+      ...savings,
+      amount: savings.amount.toString(),
+      interest: savings.interest.toString(),
+      total: savings.total.toString(),
+      min_amount: savings.min_amount.toString(),
+
+    };
+
+    return NextResponse.json(plainSavings);
   } catch (error) {
     console.error("Error fetching savings:", error);
     return NextResponse.json(

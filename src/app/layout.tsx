@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import NavbarWrapper from "@/components/NavbarWrapper";
+import { AuthProvider } from "@/context/authContext/context";
 
 export const metadata: Metadata = {
   title: "Treasures Hunters",
@@ -24,9 +25,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-body antialiased">
-        <NavbarWrapper />   {/* 🔥 Now Navbar hydrates correctly */}
+        <AuthProvider>
+        <NavbarWrapper /> 
         {children}
         <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

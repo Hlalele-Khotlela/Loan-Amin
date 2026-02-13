@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Home, UserPlus, PiggyBank, FileSliders } from "lucide-react";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+
 
 
 export function AdminNav() {
@@ -88,12 +88,7 @@ fetchUser();
           </Link>
         </li>
 
-        <li>
-          <Link href="#" className="flex items-center">
-            <FileSliders className="mr-2 h-4 w-4 text-primary" />
-            <span className="font-medium">Deposit Slips</span>
-          </Link>
-        </li>
+      
 
         <li>
           <Link href="/admin/Loans" className="flex items-center">

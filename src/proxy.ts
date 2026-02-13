@@ -9,10 +9,29 @@ function redirect(url: URL, pathname: string) {
 }
 
 function ownsResource(path: string, userMemberId: string, prefix: string) {
-  const segments = path.split("/");
-  const memberId = segments[3]; // /admin/{prefix}/[memberId]/...
-  return memberId === userMemberId;
+  const segments = path.split("/").filter(Boolean);
+  console.log("segments:", segments);
+
+  const prefixIndex = segments.findIndex(
+    seg => seg.toLowerCase() === prefix.toLowerCase()
+  );
+  if (prefixIndex === -1) {
+    console.log("prefix not found:", prefix);
+    return false;
+  }
+
+  let memberId: string | undefined;
+  if (segments[prefixIndex + 1]?.toLowerCase() === "allsavings") {
+    memberId = segments[prefixIndex + 2];
+  } else {
+    memberId = segments[prefixIndex + 1];
+  }
+
+  console.log("computed memberId:", memberId, "userMemberId:", userMemberId);
+
+  return memberId === String(userMemberId);
 }
+
 
 export async function proxy(req: NextRequest) {
   const token =
@@ -29,6 +48,9 @@ export async function proxy(req: NextRequest) {
     const role = payload.role as "User" | "Admin" | "CreditMember" | "Audit" | "Staff";
     const userMemberId = String(payload.memberId);
 
+    console.log("path:", path, "userMemberId:", userMemberId);
+    
+
     // --- Route Guards ---
     if (path.startsWith("/admin/Loans")) {
       if (["Admin", "CreditMember", "Audit"].includes(role)) return NextResponse.next();
@@ -36,7 +58,7 @@ export async function proxy(req: NextRequest) {
       return redirect(url, "/unauthorized");
     }
 
-    if (path.startsWith("/admin/Savings")) {
+    if (path.startsWith("/admin/savings")) {
       if (role === "Admin") return NextResponse.next();
       if (["User", "CreditMember", "Audit"].includes(role) && ownsResource(path, userMemberId, "Savings")) {
         return NextResponse.next();

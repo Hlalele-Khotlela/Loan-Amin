@@ -27,7 +27,8 @@ const SavingsSchema = z.object({
 export function SavingsModal({ saving, mode, onClose, onConfirm, savingsId }: SavingsModalProps) {
   const [formData, setFormData] = useState({
    amount: saving.amount?.toString() ?? "", 
-   type: saving.type || "", 
+   type: saving.savings_type || "SPECIAL", 
+
    minAmount: saving.min_amount?.toString() ?? "", 
    interest: saving.interest?.toString() ?? "", 
    total: saving.total?.toString() ?? "",
@@ -152,7 +153,6 @@ export function SavingsModal({ saving, mode, onClose, onConfirm, savingsId }: Sa
               className="w-full- border rounded px-2 py-1"
               >
 
-                
                 <option value="SPECIAL">Special</option>
                 <option value="COMPULSARY">Compulsory</option>
                 <option value="PENSION">Pension</option>
@@ -160,9 +160,8 @@ export function SavingsModal({ saving, mode, onClose, onConfirm, savingsId }: Sa
                 <option value="VOLUNTARY">Voluntary</option>         
   
               </select>
-               {errors.type && (
-                <p className="text-red-500 text-sm mt-1">{errors.type}</p>
-              )}
+               {errors.interest && <p className="text-red-500 text-sm mt-1">{errors.interest}</p>}
+
             </div>
 
             <div className="flex justify-end space-x-2">
@@ -185,13 +184,19 @@ export function SavingsModal({ saving, mode, onClose, onConfirm, savingsId }: Sa
                 Cancel
               </button>
               <button
-                onClick={() => onConfirm({
-                  ...saving, savings_id:savingsId
-                })}
-                className="px-3 py-1 bg-red-500 text-white rounded"
-              >
-                Delete
-              </button>
+  onClick={() => {
+    onConfirm({ ...saving, savings_id: savingsId });
+    toast({
+      title: "Saving Deleted",
+      description: `Saving #${saving.savings_id} has been deleted.`,
+      duration: 5000,
+    });
+  }}
+  className="px-3 py-1 bg-red-500 text-white rounded"
+>
+  Delete
+</button>
+
             </div>
           </>
         )}

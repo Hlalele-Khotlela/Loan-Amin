@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { toast } from '@/hooks/use-toast';
 
 interface EditAccumulatedInterestModalProps {
   interestId: number;
@@ -26,6 +27,10 @@ export default function EditAccumulatedInterestModal({
     if (res.ok) {
       const updated = await res.json();
       onSave(updated);
+
+        toast({title: "Response Submitted!",
+                description: "Transaction Successful.",});
+     
       onClose();
     } else {
       alert("Failed to update interest");

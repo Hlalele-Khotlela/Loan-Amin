@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { toast } from '@/hooks/use-toast';
 
 export default function IncomeModal({ isOpen, onClose, onSuccess }: any) {
   const [amount, setAmount] = useState("");
@@ -18,10 +19,13 @@ export default function IncomeModal({ isOpen, onClose, onSuccess }: any) {
     if (res.ok) {
       setAmount("");
       setType("");
-      onSuccess(); // refresh table
+      onSuccess();
+      toast({title: ` Response Submitted!`,
+                      description: "Transaction Successful.",}); // refresh table
       onClose();   // close modal
     } else {
-      alert("Error saving income");
+      toast({title: `Response Submitted!`,
+                      description: "Transaction Failed.",});
     }
   }
 

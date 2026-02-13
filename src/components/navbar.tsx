@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/authContext/context";
 
 export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  
 
   useEffect(() => {
     const fetchUser = async () => {
