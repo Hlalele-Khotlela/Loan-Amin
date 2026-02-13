@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { GroupSummaryType } from "@/types/GroupSummaryTypes";
 import EditAccumulatedInterestModal from "@/components/memberInterestModal";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function MembersList({
   members,
@@ -11,6 +12,7 @@ export default function MembersList({
   groupId: number;
 }) {
   const [selectedInterest, setSelectedInterest] = useState<any | null>(null);
+    const { canManageStaff, canApproveLoans, canViewReports } = usePermission();
 
   return (
     <div className="bg-white p-6 rounded-xl shadow">
@@ -46,7 +48,10 @@ export default function MembersList({
                 <td>{Number(latestInterest).toFixed(2)}</td>
                 
                 <td>
+                  
+
                   {latestInterestRecord ? (
+                    
                   <button
                     className="text-blue-600 underline"
                     onClick={() =>
@@ -62,6 +67,7 @@ export default function MembersList({
                     <span className="text-gray-400">No interest record</span>
 
                   )}
+                  
                 </td>
               </tr>
             );
@@ -69,8 +75,8 @@ export default function MembersList({
         </tbody>
       </table>
 
-      {selectedInterest && (
-        <EditAccumulatedInterestModal
+      {selectedInterest && canApproveLoans && (
+         <EditAccumulatedInterestModal
           interestId={selectedInterest.id}
           accumulated={selectedInterest.accumulated}
           onClose={() => setSelectedInterest(null)}

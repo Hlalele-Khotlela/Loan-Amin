@@ -285,7 +285,7 @@ console.log("member id is ", member_Id);
                       <li key={t.id} className="flex justify-between">
                         <span>{t.type}</span>
                         <span>M {t.amount}</span>
-                        <span>{new Date(t.date).toLocaleDateString()}</span>
+                        <span>{new Date(t.created_at).toLocaleDateString()}</span>
                       </li>
                     ))}
                   </ul>
@@ -349,7 +349,7 @@ console.log("member id is ", member_Id);
                   <span>Deposit</span>
 
                   <a href={`/admin/dashboard/groups/${d.group_id}`} className="text-blue-500 hover:underline">
-                    <span>{d.group_id}</span>
+                    <span>{d.groupName}View Group</span>
                   </a>
                   <span>M {d.amount}</span>
                   <span>{new Date(d.created_at).toDateString()}</span>
@@ -396,8 +396,15 @@ console.log("member id is ", member_Id);
                       <div className="text-right">
                         <p className="font-semibold">M {item.amount}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(item.applied_at).toDateString()}
-                        </p>
+  {item.applied_at
+    ? new Date(item.applied_at).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "No date"}
+</p>
+
                       </div>
                     </div>
                   </div>

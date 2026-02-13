@@ -158,7 +158,7 @@ export function LoanApplicationModal({
      
       loanType,
       amount,
-      duration: Number(formData.get("duration")),
+      duration: Number(duration),
 
       collaterals: collaterals.filter(
         (c) => c.name.trim() !== "" && c.phoneNumber.trim() !== ""

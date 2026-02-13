@@ -24,6 +24,7 @@ type Member = {
 };
 
 export default function MembersList({ members }: { members: Member[] }) {
+   
   return (
     <Card className="max-w-4xl mx-auto shadow-lg rounded-xl bg-white">
       <CardHeader className="border-b pb-4">

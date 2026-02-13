@@ -68,7 +68,7 @@ export default function LoanRequestDetails() {
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Loan Info</h2>
           <p><span className="font-medium">Type:</span> {loan.loan_type}</p>
           <p><span className="font-medium">Amount:</span> {loan.amount}</p>
-          <p><span className="font-medium">Duration:</span> {loan.loan_duration} months</p>
+          <p><span className="font-medium">Duration:</span> {loan.Loan_Duration} months</p>
           <p><span className="font-medium">Collateral Type:</span> {loan.collectrals[0]?.Type || "None"}</p>
         </div>
 
