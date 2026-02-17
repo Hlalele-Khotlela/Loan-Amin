@@ -237,7 +237,7 @@ export function LoanApplicationModal({
         {/* Header */}
         <div className="px-6 py-4 border-b flex justify-between items-center">
           <h2 className="text-lg font-semibold">
-            {canRevolve ? "Revolve Loan" : "Apply for Loan"}
+            {existingLoan ? "Revolve Loan" : "Apply for Loan"}
           </h2>
           <button
             onClick={onClose}
@@ -431,6 +431,11 @@ export function LoanApplicationModal({
         : "Cannot Revolve"
       : "Submit Application"}
   </button>
+    {requestType === "new" && hasExistingLoanOfType && (
+  <p className="mt-2 text-sm text-red-600">
+    You already have an active {loanType} loan. Please use the revolve option instead of submitting a new loan.
+  </p>
+)}
 </div>
         </form>
       </div>

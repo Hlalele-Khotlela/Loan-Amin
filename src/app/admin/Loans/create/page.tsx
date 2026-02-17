@@ -186,7 +186,7 @@ console.log("revolvingResult:", revolvingResult);
       <div className="mx-auto max-w-3xl bg-white rounded-xl shadow-lg flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 border-b">
-          <h1 className="text-xl font-semibold text-gray-800">Apply for Loan</h1>
+          <h1 className="text-xl font-semibold text-gray-800">{existingLoan ? "Revolve Loan" : "Apply for Loan"}</h1>
           <p className="text-sm text-gray-500">
             Fill in the details below to create a loan
           </p>

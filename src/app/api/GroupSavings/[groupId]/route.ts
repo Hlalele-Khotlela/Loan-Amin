@@ -68,12 +68,10 @@ export async function PUT(req: Request, context: { params: Promise<{ groupId: st
     const {groupId} = await context.params;
     const groupid = Number(groupId);
     
-console.log(groupid);
+
     if (isNaN(groupid)) {
       return NextResponse.json({ error: "Invalid groupId" }, { status: 401 });
     }
-
-    
 
     const body = await req.json();
     const { name, members } = body;
@@ -93,7 +91,7 @@ console.log(groupid);
       select: { member_Id: true },
     });
 
-    console.log(existingMembers);
+  
 
     if (existingMembers.length !== uniqueMembers.length) {
       return NextResponse.json(
@@ -101,6 +99,8 @@ console.log(groupid);
         { status: 400 }
       );
     }
+
+     
 
     // Update group
     const updatedGroup = await prisma.groupSaving.update({
@@ -116,8 +116,6 @@ console.log(groupid);
         members: true,
       },
     });
-
-
 
 
     return NextResponse.json(updatedGroup, { status: 200 });

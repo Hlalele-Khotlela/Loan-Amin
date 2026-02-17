@@ -53,6 +53,7 @@ export function MemberModal({ member, mode, onClose, onConfirm }: MemberModalPro
                 name="member_Id"
                 value={formData.member_Id}
                 onChange={handleChange}
+                readOnly
                 className="w-full border rounded px-2 py-1"
               />
             </div>

@@ -6,7 +6,6 @@ import { getMemberDashboardData } from "@/lib/memberAgg/route";
 export async function GET() {
   try {
     const members = await prisma.member.findMany({
-      where:{Status:"active"},
       select: {
         member_Id: true,
         firstName: true,

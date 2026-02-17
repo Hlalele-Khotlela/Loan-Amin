@@ -5,7 +5,7 @@ import MembersList from "@/components/MemberList";
 
 export default async function MemberList() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const res = await fetch(`${baseUrl}/api/Member`, { cache: "no-store" });
+  const res = await fetch(`${baseUrl}/api/MemberList`, { cache: "no-store" });
 
   
 const members = await res.json();
