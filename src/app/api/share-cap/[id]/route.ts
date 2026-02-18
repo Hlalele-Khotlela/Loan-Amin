@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
 import { Decimal } from '@prisma/client/runtime/client.js';
 
+
+
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const body = await req.json();
   try {
@@ -10,7 +12,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const record = await prisma.shareOnCapital.findUnique({
       where: { id: Number(id) },
     });
-    console.log("body...", body);
+   
     if (!record) return NextResponse.json({ message: "Not found" }, { status: 404 });
 
     // Only accumulatedInterest is editable
@@ -27,6 +29,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       },
     });
 
+      await prisma.shareOnCapitaltTransaction.create({
+      data:{
+        amount:newAccumulated,
+        type:"interest Edit",
+        balance: totals,
+        member_Id:updated.member_Id,
+        sharesId:updated.id
+      }
+    });
+
+
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error(error);
@@ -37,6 +51,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const {id} = await params;
+    const existing = await prisma.shareOnCapital.findUnique({ 
+      where: { id: Number(id) }, 
+    }); 
+    if (!existing) { 
+      return NextResponse.json(
+        { message: "Not found" }, { status: 404 }); } 
+        
+        const previousBalance = existing.balance;
     // Full withdrawal: reset everything
     const updated = await prisma.shareOnCapital.update({
       where: { id: Number(id) },
@@ -46,6 +68,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         Accumu_interest: 0,
         balance: 0,
       },
+    });
+    
+    await prisma.shareOnCapitaltTransaction.create({
+      data:{
+        amount:previousBalance,
+        type:"withdrawal",
+        balance: 0,
+        member_Id:updated.member_Id,
+        sharesId:updated.id
+      }
     });
 
     return NextResponse.json(updated);

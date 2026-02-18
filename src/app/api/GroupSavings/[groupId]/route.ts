@@ -23,7 +23,7 @@ export async function GET(
     },
   });
  
-  console.log("members", JSON.stringify(group?.members, null, 2));
+  
 
 
   if (!group) {

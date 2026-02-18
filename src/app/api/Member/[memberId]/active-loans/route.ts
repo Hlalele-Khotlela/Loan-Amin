@@ -24,7 +24,7 @@ export async function GET(
       loan_id: true
      },
   });
-  console.log("Active Loans:", activeLoans);
+ 
 
   if(!activeLoans || activeLoans.length === 0){
     return NextResponse.json({error:"No active loans found"}, {status:404});

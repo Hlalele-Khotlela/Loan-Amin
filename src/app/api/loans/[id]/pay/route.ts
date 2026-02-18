@@ -9,9 +9,6 @@ export async function PATCH(req: Request, context: {params: Promise<{ id: string
   const { paymentAmount } = await req.json();
   
 
-  console.log("PATCH body:", paymentAmount);
-
-
   if (paymentAmount === undefined || isNaN(paymentAmount)) {
      return NextResponse.json({ error: "Invalid payment amount" }, { status: 400 }); }
 
@@ -76,6 +73,9 @@ export async function DELETE(_: Request, context: {params: Promise<{id: string}>
     data :{status: "inactive"}
     
   });
+
+  
+
   return NextResponse.json({success: true});
 
 }
@@ -108,6 +108,15 @@ export async function PUT(req: Request, context: {params: Promise<{id: string}>}
     },
     
   });
+   await prisma.loanTransaction.create({
+    data: {
+      loan_id: LoanId,
+      member_Id: updated.member_Id,
+      type: "Edit",
+      
+      new_balance: totalpayeable,
+    }
+  })
   
   await prisma.loanInterest.updateMany({
     where:{loan_id:updated.loan_id},

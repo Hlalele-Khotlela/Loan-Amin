@@ -21,20 +21,20 @@ const memberSchema = z.object({
 
 export async function POST(req: Request) {
   // const { firstName, LastName, Email, Gender, Phone } = await req.json();
-  console.log("Saving member:");
+  
 
   try {
     // console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
     const body = await req.json();
-    console.log("Received body:", body);
+    
     const parsed = memberSchema.safeParse(body);
     if (!parsed.success) {
       console.error("Validation errors:", parsed.error.errors);
       return NextResponse.json({ message: "Validation failed", errors: parsed.error.errors }, { status: 400 });
     }
     const { firstName, lastName, email, gender, phone, member_Id } = body;
-    console.log("Parsed member data:", { firstName, lastName, email, gender, phone, Member_Id: Date.now().toString() });
+    
 
     // check if email already exists
     const existingMember = await prisma.member.findUnique({
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
    });
 
  
-    console.log("Member saved:", member);
+    
     return NextResponse.json({ member: "Member saved" }, { status: 201 });
   } catch (error: any) {
     if (error.code === "P2002") {

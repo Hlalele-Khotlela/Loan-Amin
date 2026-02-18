@@ -27,7 +27,7 @@ fetchUser();
     
   }, []);
   
-  console.log("user role, ", user?.role);
+  
 
   if (!["CreditMember", "Admin", "Audit"].includes(user?.role)) {
     return null; // hide menu for non-admins

@@ -94,6 +94,7 @@ async function handleConfirm(savings: any) {
               <th className="px-4 py-2 border">Date</th>
               <th className="px-4 py-2 border">Transaction</th>
               <th className="px-4 py-2 border">Amount</th>
+              <th className="px-4 py-2 border">Balance</th>
               
             </tr>
           </thead>
@@ -105,6 +106,7 @@ async function handleConfirm(savings: any) {
                 </td>
                 <td className="px-4 py-4 border">{tx.type}</td>
                 <td className="px-4 py-4 border">{tx.amount.toString()}</td>
+                <td className="px-4 py-4 border">{tx.balance.toString()}</td>
                
               </tr>
             ))}

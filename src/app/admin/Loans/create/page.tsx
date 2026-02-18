@@ -117,7 +117,7 @@ const hasExistingLoanOfType =
 
 
 
-console.log("revolvingResult:", revolvingResult);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 

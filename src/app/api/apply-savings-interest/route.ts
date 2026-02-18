@@ -108,6 +108,17 @@ for (const shares of shareOnCapital){
 
     await prisma.expenses.create({
       data:{type:"ShareOnCapitalInterest", amount:totalInterest }
+    });
+
+    await prisma.shareOnCapitaltTransaction.create({
+      data:{
+        amount:totalInterest,
+        balance:newBalance,
+        type:"monthly interest",
+        member_Id:shares.member_Id,
+        sharesId:shares.id,
+
+      }
     })
     
 

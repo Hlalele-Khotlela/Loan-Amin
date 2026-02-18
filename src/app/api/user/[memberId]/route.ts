@@ -29,8 +29,7 @@ export async function GET(
       return NextResponse.json({ error: "Invalid memberId" }, { status: 400 });
     }
 
-    console.log("API received memberId:", memberId);
-    console.log("API decoded token id:", decoded.id);
+    
 
     // ✅ Ensure token matches route param
     if (decoded.id !== member_Id) {

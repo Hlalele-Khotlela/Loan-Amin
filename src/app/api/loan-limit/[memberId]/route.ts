@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { memberId } = await params;
     const limits = await loanAggregations(Number(memberId));
-    console.log({ limits });
+    
 
     return NextResponse.json(limits);
   } catch (err: any) {

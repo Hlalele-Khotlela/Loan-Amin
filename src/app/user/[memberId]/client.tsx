@@ -85,7 +85,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
   };
 
   /* ---------------------------- data fetch ---------------------------- */
-console.log("member id is ", member_Id);
+
 
   useEffect(() => {
     if ( !member_Id) return;

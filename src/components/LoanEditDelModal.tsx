@@ -1,10 +1,12 @@
 //Modal for deleting and Edditing Loan
 import React, { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 type LoanModalProps = {
   loan: any;
   mode: "edit" | "delete";
   onClose: () => void;
+  
   onConfirm: (updatedLoan: any) => void;
 };
 
@@ -23,7 +25,9 @@ export function LoanModal({ loan, mode, onClose, onConfirm }: LoanModalProps) {
     setFormData((prev) => ({
       ...prev,
       [name]: Number(value),
+      
     }));
+    
   }
 
   return (

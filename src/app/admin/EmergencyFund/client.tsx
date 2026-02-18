@@ -15,10 +15,7 @@ export default function TransactionTable() {
       ? `/api/EmegencyFund?month=${selectedMonth}`
       : "/api/EmegencyFund";
       
-      
-
-
-       console.log("Fetching URL:", url);
+ 
     const res = await fetch(url, {cache:"no-store"});
     const json = await res.json();
     

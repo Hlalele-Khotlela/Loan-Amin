@@ -165,9 +165,7 @@ const NonMoveableInterestByMember = await prisma.interest.groupBy({
 
 combinedInterestByMember.sort((a, b)=> b.totalOwnerShare- a.totalOwnerShare);
 
-console.log("InterestByMember:", InterestByMember);
-console.log("LoanInterestByMember:", loanInterestByMember);
-console.log("Combined:", combinedInterestByMember);
+
 
 
 const MemberTotalImoveable = NonMoveableInterestByMember.map((s)=>{

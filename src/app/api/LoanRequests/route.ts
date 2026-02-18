@@ -62,7 +62,7 @@ export async function GET(req: Request) {
       // Log the raw rows before sending
     // console.log("DB result:", result.rows);
     
-   console.log("Filters:", { type: loan_type, where });
+   
    
    return NextResponse.json({ data: result,
       

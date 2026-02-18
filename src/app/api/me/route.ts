@@ -13,7 +13,7 @@ export async function GET() {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    console.log("Decoded payload:", payload);
+  
 
     return NextResponse.json({ user: payload });
   } catch {

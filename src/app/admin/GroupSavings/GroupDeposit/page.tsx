@@ -38,16 +38,16 @@ export default function GroupDepositForm() {
   }, []);
 
   useEffect(() => {
-    console.log("Final URL:", `/api/GroupSavings/${groupId}/members`);
+   
 
       if (!groupId) return;
 
     fetch(`/api/GroupSavings/${groupId}/members`)
       .then((res) => res.json())
       .then((data) => { 
-        console.log("Fetched members:", data);
+      
         setMembers(data);
-        console.log("groupId:", groupId);
+        
 
       });
   }, [groupId]);

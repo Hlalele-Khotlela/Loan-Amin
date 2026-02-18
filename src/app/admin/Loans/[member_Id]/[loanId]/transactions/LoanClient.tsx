@@ -19,7 +19,9 @@ export default function LoanClient({ loans }: { loans: any }) {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedLoan),
+        
       });
+      
     }
     setSelectedLoan(null);
     setMode(null);
@@ -67,8 +69,7 @@ export default function LoanClient({ loans }: { loans: any }) {
               className="flex justify-between items-center bg-white p-4 rounded shadow"
             >
              
-                
-          
+      
               
             </div>
           
@@ -84,6 +85,7 @@ export default function LoanClient({ loans }: { loans: any }) {
               <th className="px-4 py-2 border">Date</th>
               <th className="px-4 py-2 border">Transaction</th>
               <th className="px-4 py-2 border">Amount</th>
+              <th className="px-4 py-2 border">Balance</th>
               
             </tr>
           </thead>
@@ -95,6 +97,7 @@ export default function LoanClient({ loans }: { loans: any }) {
                 </td>
                 <td className="px-4 py-4 border">{t.type}</td>
                 <td className="px-4 py-4 border">{t.amount.toString()}</td>
+                <td className="px-4 py-4 border">{t.new_balance.toString()}</td>
                
               </tr>
             ))}

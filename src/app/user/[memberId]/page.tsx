@@ -7,9 +7,7 @@ import UserProfilePage from "./client";
 export default async function Page({ params }: { params:Promise< { memberId: string } >}) {
   // params.memberId is a string from the URL, convert to number
   const {memberId} = await params;
-  console.log("member, ",memberId);
-
- 
+  
 
   const member = await prisma.member.findUnique({
     where: { member_Id: Number(memberId) },

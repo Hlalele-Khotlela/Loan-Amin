@@ -29,7 +29,7 @@ const handleTransaction = async (data: { type: string; amount: number; descripti
       body: JSON.stringify(data),
     });
     const result = await res.json();
-    console.log("Transaction result:", result);
+    
     //  Refresh table data here (re-fetch transactions)
   }catch (err){
     console.error("Error submitting transaction:", err);

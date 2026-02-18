@@ -69,7 +69,7 @@ export default function UserProfile() {
           Phone: data.phone,
         });
 
-        console.log("API returned:", data);
+       
       } catch (err) {
         console.error("Failed to fetch user:", err);
       }
@@ -79,10 +79,14 @@ export default function UserProfile() {
   }, []);
 
   if (!user) return <p>Loading profile...</p>;
+return (
+  <div>
+    <h1>{user.firstName} {user.lastName}</h1>
+    <p>Status: {user.status}</p>
+    <p>Email: {user.email}</p>
+    <p>Phone: {user.Phone}</p>
+    <p>Member ID: {user.member_Id}</p>
+  </div>
+);
 
-  return (
-    <div>
-      <UserProfile {...user} />
-    </div>
-  );
 }

@@ -4,8 +4,6 @@ import { Decimal } from '@prisma/client/runtime/client.js';
 
 // Example usage
 const amount: Decimal = new Decimal(123.45);
-console.log(amount.toFixed(2)); // "123.45"
-
 
 
 export async function POST(
@@ -64,7 +62,6 @@ if (savings.interest.lt(interest)) {
 if (availableBalance.lt(totalWith)) {
   return NextResponse.json({ message: "Insufficient balance" }, { status: 400 });
 }
-
 
     // Update balances
     const updated = await prisma.savings.update({

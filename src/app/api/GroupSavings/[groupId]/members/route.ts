@@ -41,7 +41,7 @@ export async function GET(
         { status: 404 }
       );
     }
-console.log("Group members:", group.members);
+
 
     return NextResponse.json(group.members);
   } catch (error) {

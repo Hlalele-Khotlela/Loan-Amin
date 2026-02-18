@@ -57,6 +57,7 @@ export default async function SavingsTransactions({
        {
         ...st,
         amount: st.amount?.toString()?? "0.00",
+        balance:st.balance?.toString()?? "0.00",
        }
       ))
 

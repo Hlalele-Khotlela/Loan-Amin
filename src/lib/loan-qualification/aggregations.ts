@@ -25,8 +25,7 @@ export async function loanAggregations(memberId: number) {
   const EmergencyLimit = 4000;
   const longTermLimit = (Number(compulsory) + Number(security) + Number(shareCap)) * 2;
 
-  console.log({ compulsory, security, shareCap, shortTermLimit, longTermLimit });
-
+  
 
   return {
     compulsory,

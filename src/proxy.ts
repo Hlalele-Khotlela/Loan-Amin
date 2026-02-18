@@ -10,13 +10,13 @@ function redirect(url: URL, pathname: string) {
 
 function ownsResource(path: string, userMemberId: string, prefix: string) {
   const segments = path.split("/").filter(Boolean);
-  console.log("segments:", segments);
+
 
   const prefixIndex = segments.findIndex(
     seg => seg.toLowerCase() === prefix.toLowerCase()
   );
   if (prefixIndex === -1) {
-    console.log("prefix not found:", prefix);
+   
     return false;
   }
 
@@ -27,7 +27,7 @@ function ownsResource(path: string, userMemberId: string, prefix: string) {
     memberId = segments[prefixIndex + 1];
   }
 
-  console.log("computed memberId:", memberId, "userMemberId:", userMemberId);
+
 
   return memberId === String(userMemberId);
 }
@@ -48,8 +48,7 @@ export async function proxy(req: NextRequest) {
     const role = payload.role as "User" | "Admin" | "CreditMember" | "Audit" | "Staff";
     const userMemberId = String(payload.memberId);
 
-    console.log("path:", path, "userMemberId:", userMemberId);
-    
+  
 
     // --- Route Guards ---
     if (path.startsWith("/admin/Loans")) {
@@ -78,7 +77,8 @@ export async function proxy(req: NextRequest) {
           },
         });
         if (membership) return NextResponse.next();
-        return redirect(url, "/unauthorized");
+        
+        return NextResponse.redirect(url);
       }
     }
 

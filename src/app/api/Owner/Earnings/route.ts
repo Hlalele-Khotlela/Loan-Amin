@@ -28,7 +28,7 @@ export async function GET() {
     }
 
     // Return JSON response
-    console.log("Returning:", safeData);
+   
 
     return NextResponse.json(safeData);
 

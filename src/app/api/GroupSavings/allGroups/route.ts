@@ -9,7 +9,7 @@ export async function GET() {
                 group_id: "asc"
             }
         });
-        console.log("Fetched groups:", groups);
+        
             return NextResponse.json(groups, { status: 200 });
     }
     catch(error){

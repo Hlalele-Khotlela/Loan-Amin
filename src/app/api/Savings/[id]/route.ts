@@ -48,7 +48,7 @@ export async function DELETE(_: Request, context: {params: Promise<{id: string}>
   const {id}= await context.params;
   const SavingId= parseInt(id, 10);
 
-  console.log(SavingId)
+ 
 
   await prisma.savings.update({
     where:{savings_id: SavingId},
@@ -83,6 +83,14 @@ export async function PUT(req: Request, context: {params: Promise<{id: string}>}
      savings_type:body.type,
      min_amount: minAmount,
     },
+  });
+
+  await prisma.savingsTransaction.create({
+    data:{
+      type:"EDIT",
+      balance:total,
+      savings_id:updated.savings_id
+    }
   });
   return NextResponse.json(updated);
 }

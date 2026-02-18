@@ -81,7 +81,7 @@ export default function MembersList({
           accumulated={selectedInterest.accumulated}
           onClose={() => setSelectedInterest(null)}
           onSave={(updated) => {
-            console.log("Updated interest:", updated);
+            
             setSelectedInterest(null);
           }}
         />

@@ -5,7 +5,7 @@ import {Prisma} from "@prisma/client";
 export async function POST(req: Request) {
     try {
         const {savings_type, name, Minamount, member_Ids} = await req.json();
-    console.log("Received data:", {member_Ids, Minamount, savings_type});
+   
 
     // Validate input
     if (!member_Ids || !Minamount || !savings_type) {
@@ -38,9 +38,8 @@ export async function POST(req: Request) {
                 members: true
               },
     });
-    console.log("New savings created:", newSavings);
-    console.log("NAME VALUE:", name);
-console.log("NAME TYPE:", typeof name);
+    
+   
 
     return NextResponse.json(newSavings, { status: 201 });
 

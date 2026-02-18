@@ -12,9 +12,7 @@ export async function PUT(
     // Convert params.id (string) to number
     const idNum = Number(interestId);
       const body = await req.json();
-    console.log("body:", body);
-    console.log("params.id:", interestId);
-
+    
     if (isNaN(idNum)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }

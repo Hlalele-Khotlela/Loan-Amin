@@ -96,7 +96,7 @@ export default function loansrequests() {
       const res= await fetch(`/api/LoanRequests?${params.toString()}`);
       const data = await res.json();
       // debug to see the outcome
-      console.log("Api response: ", data);
+     
 
       setTotalPages(data.pagination?.totalPages ?? 1);
       //setTotalPages(Math.ceil(data.totalCount / limit));
@@ -116,18 +116,17 @@ export default function loansrequests() {
     fetchLoanRequests()
   }, [page, selectedType, debouncedSearch]);
  
- console.log("API response data:", myloanRequests);
-
+ 
 
   const handlechange= (id: string, newStatus: string) => {
     setStatus((prev) => ({ ...prev, [id]: newStatus }) );
-    console.log("Changed status to:", newStatus);
+   
   }
 
   // handle form submission for each loan request
   const handleSubmit= async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting status changes:", status); 
+    
     try {
       for (const [request_id, newstatus] of Object.entries(status)) {
         const response = await fetch(`/api/LoanRequests/updater/${request_id}`, {
@@ -138,7 +137,7 @@ export default function loansrequests() {
           
           body: JSON.stringify({ status: newstatus }),
         });
-        console.log("Submitting status changes:", status);
+       
 
 
       if (response.ok) {
@@ -157,7 +156,7 @@ export default function loansrequests() {
       }
       }
     } catch (error) {
-      console.error("Error submitting status changes:", error);
+      
     }
   };
 
@@ -168,7 +167,7 @@ export default function loansrequests() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Loan Request Response Submitted:", values);
+    
 
     toast({
       title: "Response Submitted!",

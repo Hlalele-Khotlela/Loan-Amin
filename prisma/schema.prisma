@@ -50,6 +50,7 @@ model Member {
   groupSavingsTransactions GroupSavingsTransaction[]
   GroupWithdrawal          GroupWithdrawal[]
   loan                     Loan[]
+  ShareOnCapitaltTransaction ShareOnCapitaltTransaction[]
   LoanIntestTransaction    LoanIntestTransaction[]
   LoanRequestComments      LoanRequestComments[]
   LoanTransaction          LoanTransaction[]
@@ -122,7 +123,7 @@ model LoanTransaction {
   loan_id     Int
   applied_at  DateTime            @default(now())
   new_balance Decimal             @default(0) @db.Decimal(12, 2)
-  amount      Decimal             @default(0) @db.Decimal(12, 2)
+  amount      Decimal ?             @db.Decimal(12, 2)
   member_Id   Int?
   type        LoanTransactionType
   loan        Loan                @relation(fields: [loan_id], references: [loan_id])
@@ -132,7 +133,8 @@ model LoanTransaction {
 model SavingsTransaction {
   id         Int             @id @default(autoincrement())
   savings_id Int
-  amount     Decimal         @db.Decimal(12, 2)
+  amount     Decimal?         @db.Decimal(12, 2)
+  balance     Decimal         @default(0) @db.Decimal(12, 2)
   type       TransactionType
   created_at DateTime        @default(now())
   member_Id  Int?
@@ -204,7 +206,19 @@ model ShareOnCapital {
   amount           Decimal  @db.Decimal(12, 2)
   balance          Decimal  @db.Decimal(12, 2)
   created_at       DateTime @default(now())
+  ShareOnCapitaltTransaction ShareOnCapitaltTransaction[]
   member           Member   @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
+}
+model ShareOnCapitaltTransaction {
+  id          Int      @id @default(autoincrement())
+  sharesId     Int
+  member_Id   Int?
+  amount      Decimal  @db.Decimal(12, 2)
+  type        String
+  balance     Decimal  @db.Decimal(12, 2)
+  created_at  DateTime @default(now())
+  ShareOnCapital       ShareOnCapital    @relation(fields: [sharesId], references: [id], onDelete: Cascade)
+  member      Member?  @relation(fields: [member_Id], references: [member_Id], onDelete: Cascade)
 }
 
 model Incomes {
@@ -328,8 +342,11 @@ model LoanRequestComments {
 
 enum LoanTransactionType {
   issued
+  Edit
   repayment
   interest
+  completed
+  Deleted
   statusChange
 }
 
@@ -394,6 +411,7 @@ enum SavingStatus {
 
 enum TransactionType {
   DEPOSIT
+  EDIT
   WITHDRAWAL
   INTEREST
   CREATED
