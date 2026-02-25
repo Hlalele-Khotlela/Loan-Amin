@@ -9,7 +9,7 @@ import { LoanApplicationModal } from "@/components/loan-application-form";
 import { FloatingAdminButton } from "@/components/floatingButton";
 import FloatingActionButton from "@/components/FAB";
 import { useAuth } from "@/hooks/useAuth";
-import { group } from "console";
+
 
 const TABS = [
   "Overview",
@@ -21,7 +21,7 @@ const TABS = [
 
 type Tab = (typeof TABS)[number];
 
-export default function UserProfilePage({ member_Id }: { member_Id: number }) {
+export default function UserProfilePage({ member_Id, shares }: { member_Id: number, shares: any[] }) {
   const { user } = useAuth();
 
   const [member, setMember] = useState<any>(null);
@@ -80,6 +80,11 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
         groupName: w.group_name,
       })
     );
+    
+
+
+
+
 
     return feed.sort((a, b) => b.date.getTime() - a.date.getTime());
   };
@@ -110,6 +115,8 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
 
     fetchMember();
   }, [member_Id]);
+  
+
 
   if (!user || !member) return <p>Loading profile...</p>;
 
@@ -231,7 +238,7 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
               </div>
 
               {/* Stats */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                 <div className="rounded-2xl border p-4">
                   <p className="text-sm text-muted-foreground">Savings Balance</p>
                   <p className="mt-1 text-xl font-semibold">
@@ -240,6 +247,15 @@ export default function UserProfilePage({ member_Id }: { member_Id: number }) {
                       (acc: number, s: any) => acc + Number(s.amount),
                       0
                     )}
+                  </p>
+                </div>
+                <div className="rounded-2xl border p-4">
+                  <p className="text-sm text-muted-foreground">Share Capital Balance</p>
+                  <p className="mt-1 text-xl font-semibold">
+                    
+                  M {shares?.[shares.length - 1]?.balance ?? 0}
+
+                    
                   </p>
                 </div>
                 <div className="rounded-2xl border p-4">

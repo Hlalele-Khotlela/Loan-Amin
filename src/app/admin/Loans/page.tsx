@@ -22,7 +22,7 @@ export default function LoansPage() {
   balance: Decimal;
 }
 
-  const { user, loading: authLoading } = useAuth(["Admin", "CreditMember"]);
+  
 
 
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -75,7 +75,7 @@ export default function LoansPage() {
     fetchLoans();
   }, [page, selectedType, debouncedSearch]);
 
-  if (authLoading) return <p>Loading...</p>;
+
 
   return (
     <div className="flex gap-6">

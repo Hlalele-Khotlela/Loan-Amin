@@ -52,16 +52,16 @@ export async function proxy(req: NextRequest) {
 
     // --- Route Guards ---
     if (path.startsWith("/admin/Loans")) {
-      if (["Admin", "CreditMember", "Audit"].includes(role)) return NextResponse.next();
-      if (role === "User" && ownsResource(path, userMemberId, "Loans")) return NextResponse.next();
+      if (["Admin", "CreditMember", "Audit", "User"].includes(role)) return NextResponse.next();
+      // if (role === "User" && ownsResource(path, userMemberId, "Loans")) return NextResponse.next();
       return redirect(url, "/unauthorized");
     }
 
     if (path.startsWith("/admin/savings")) {
-      if (role === "Admin") return NextResponse.next();
-      if (["User", "CreditMember", "Audit"].includes(role) && ownsResource(path, userMemberId, "Savings")) {
-        return NextResponse.next();
-      }
+      if(["Admin", "CreditMember", "Audit", "User"].includes(role)) return NextResponse.next();
+      // if (["User", "CreditMember", "Audit", "User"].includes(role) && ownsResource(path, userMemberId, "Savings")) {
+      //   return NextResponse.next();
+      // }
       return redirect(url, "/unauthorized");
     }
 
@@ -82,17 +82,21 @@ export async function proxy(req: NextRequest) {
       }
     }
 
-    if (path.startsWith("/admin") && !["Admin", "CreditMember", "Audit"].includes(role)) {
-      return redirect(url, "/unauthorized");
-    }
 
     if (path.startsWith("/staff") && !["Admin", "Staff"].includes(role)) {
       return redirect(url, "/unauthorized");
     }
+    
 
     if (path.startsWith("/user") && !["User", "CreditMember", "Audit", "Admin"].includes(role)) {
       return redirect(url, "/unauthorized");
     }
+
+    if (path.startsWith("/admin/reset-password") || path.startsWith("/admin/login")) {
+      return NextResponse.next();
+    }
+
+
 
     return NextResponse.next();
   } catch (err) {
@@ -103,7 +107,8 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/admin/:path((?!login).*)",
+   "/admin/:path((?!login|forget-password|reset-password).*)",
+    
     "/staff/:path*",
     "/user/:path*",
   ],

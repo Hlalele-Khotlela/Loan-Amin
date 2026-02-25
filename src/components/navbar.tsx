@@ -53,7 +53,7 @@ export default function Navbar() {
 
 
   return (
-    <nav className="w-full border-b bg-white sticky top-0 z-50">
+    <nav className="w-full border-b bg-orange-600 text-white sticky top-0 z-50">
       <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
         <Link href="/" className="text-xl font-bold text-primary">
           Treasure Hunters
@@ -63,7 +63,7 @@ export default function Navbar() {
           {!user && (
             <Link
               href="/"
-              className="px-4 py-2 rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition"
+              className="px-4 py-2 rounded-md bg-blue-700 text-white border border-primary text-primary hover:bg-primary hover:text-white transition"
             >
               Login
             </Link>
@@ -72,7 +72,7 @@ export default function Navbar() {
           {user && (
             <div className="flex items-center gap-4">
               <Link href={`/user/${user.id}`} className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+                <div className="h-10 w-10 rounded-full bg-blue-700 text-white flex items-center justify-center font-semibold">
                   {user.email?.charAt(0).toUpperCase()}
                 </div>
                 <span className="font-medium">{user.email}</span>
@@ -80,7 +80,7 @@ export default function Navbar() {
 
               <button
                 onClick={logout}
-                className="px-4 py-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition"
+                className="px-4 py-2 rounded-md border bg-blue-700 text-white border-red-500  hover:bg-red-500 hover:text-white transition"
               >
                 Logout
               </button>

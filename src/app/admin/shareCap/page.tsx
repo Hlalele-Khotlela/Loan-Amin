@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePermission } from "@/hooks/usePermission";
 
 interface ShareCapital {
   id: number;
@@ -20,8 +21,10 @@ export default function ShareCapitalPage() {
   const [editItem, setEditItem] = useState<ShareCapital | null>(null);
   const [withdrawItem, setWithdrawItem] = useState<ShareCapital | null>(null);
   const [inputValue, setInputValue] = useState("");
+   const { canManageStaff, canApproveLoans, canViewReports } = usePermission();
 
   async function fetchData(query?: string) {
+    
     const res = await fetch(`/api/share-cap${query ? `?memberId=${query}` : ""}`);
     if (res.ok) {
       setData(await res.json());
@@ -119,7 +122,8 @@ async function handleWithdrawSubmit() {
       </table>
 
       {/* Edit Modal */}
-      {editItem && (
+      
+      {canApproveLoans&& editItem && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl">
             <h2 className="text-xl font-semibold mb-4">Edit Amount</h2>
@@ -146,7 +150,7 @@ async function handleWithdrawSubmit() {
       )}
 
       {/* Withdraw Modal */}
-      {withdrawItem && (
+      {canApproveLoans&& withdrawItem && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl">
             <h2 className="text-xl font-semibold mb-4">Withdraw Amount</h2>

@@ -315,8 +315,22 @@ model Admin {
   password   String
   email      String   @unique
   role       String   @default("Admin")
+  PasswordReset PasswordReset[]
   created_at DateTime @default(now())
+
 }
+
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  tokenId   String   @unique   // UUID for revocation
+  jwtHash   String             // hashed JWT for verification
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  admin     Admin    @relation(fields: [adminId], references: [admin_Id], onDelete: Cascade)
+}
+
 
 model LoanColletralInfo {
   loan_id     Int?

@@ -10,7 +10,7 @@ import { usePermission } from "@/hooks/usePermission";
 import Link from "next/link";
 // import { LoanDetails } from "./LoanDetails";
 
-export default function MemberClient({ member, dashboardData }: { member: any; dashboardData: any; }) {
+export default function MemberClient({ member, dashboardData}: { member: any; dashboardData: any; }) {
   const [selectedMember, setSelectedMember] = useState<any | null>(null);
   const [mode, setMode] = useState<"edit" | "delete" | null>(null);
   const { canApproveLoans, canManageStaff, canViewSavings } = usePermission();
@@ -237,6 +237,32 @@ export default function MemberClient({ member, dashboardData }: { member: any; d
               <li key={d.deposit_id} className="border-b pb-2">
                 R {d.amount} — {new Date(d.deposited_at).toISOString()} -- Group#{d.group_id}
               </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* share Capital  */}
+        <div className="bg-white shadow rounded-lg p-6 border">
+        <h2 className="text-lg font-semibold mb-4">Share Capital</h2>
+
+        {member.shares.length === 0 ? (
+          <p className="text-gray-600"> shares Withdrwan.</p>
+        ) : (
+          <ul className="space-y-2">
+            {member.shares.map((d: any) => (
+              <li key={d.share_id} className="border-b pb-2">
+                <span className="font-medium">Amount R {d.amount}</span>  — {new Date(d.created_at).toISOString()} 
+                <li key={d.share_id} className="border-b pb-2">
+                <span className="font-medium">Balance R {d.balance}</span> — {new Date(d.created_at).toISOString()}                 
+              </li>
+              <li key={d.share_id} className="border-b pb-2">
+                <span className="font-medium">Accumulated Interest R {d.Accumu_interest}</span> — {new Date(d.created_at).toISOString()}                 
+              </li>
+              
+                
+              </li>
+              
             ))}
           </ul>
         )}

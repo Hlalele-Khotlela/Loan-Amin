@@ -60,9 +60,9 @@ export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) 
     
     <div className=" mx-3">
       <CooporateSummary cooporate={earnings}/>
-      <div className="grid grid-cols-3 gap-x-4 my-3 mt-12">
+      <div className="grid grid-cols-3 gap-x-4 my-3 mt-12 ">
         
-        <Link className="p-4 bg-white shadow rounded-lg border hover:shadow-md transition" href="#">
+        <Link className="p-4 bg-blue-700 text-white shadow rounded-lg border hover:shadow-md transition" href="#">
       <h2 className="text-lg font-semibold">Loans</h2>
       <p>Total Borrowed: {data?.loans._sum.Principal?.toString() ?? "0"}</p>
       <p>Total Payable: {data?.loans._sum.totals_payeable?.toString() ?? "0"}</p>
@@ -84,7 +84,7 @@ export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) 
         ))}
         </Link>
       
-      <Link className=" p-4 bg-white shadow rounded-lg border hover:shadow-md transition" href="#">
+      <Link className=" p-4 bg-blue-700 text-white shadow rounded-lg border hover:shadow-md transition" href="#">
       <h2 className="text-lg font-semibold">Savings</h2>
       <p>Total Savings: {data?.savings._sum.amount?.toString() ?? "0"}</p>
       <p>Total Savings aft Int: {data?.savings._sum.total?.toString() ?? "0"}</p>
@@ -99,7 +99,7 @@ export default function GlobalDashboard({ data }: { data?: SafeDashboardData }) 
 
  
 
-      <Link className=" p-4 bg-white shadow rounded-lg border hover:shadow-md transition " href="#" >
+      <Link className=" p-4 bg-blue-700 text-white shadow rounded-lg border hover:shadow-md transition " href="#" >
       <h2 className="text-lg font-semibold">Group</h2>
       
         <p>Total Group Amount: {data?.groups._sum.amount?.toString() ?? "0"}</p>

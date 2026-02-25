@@ -27,14 +27,9 @@ fetchUser();
     
   }, []);
   
-  
-
-  if (!["CreditMember", "Admin", "Audit"].includes(user?.role)) {
-    return null; // hide menu for non-admins
-  }
 
   return (
-    <div className="w-64 flex-none shadow-lg bg-slate-200 rounded-lg border p-6">
+    <div className="w-64 flex-none shadow-lg bg-blue-700 text-white rounded-lg border p-6">
       <ul className="mt-3 space-y-4">
 
         <li>

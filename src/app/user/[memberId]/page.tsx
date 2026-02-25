@@ -11,12 +11,20 @@ export default async function Page({ params }: { params:Promise< { memberId: str
 
   const member = await prisma.member.findUnique({
     where: { member_Id: Number(memberId) },
+    include: {shares:true, loan:true, savings:true, groupSavings:true},
   });
+  const shares = await prisma.shareOnCapital.findMany({
+  where: { member_Id: Number(memberId) },
+});
+
+
+const safeShares = shares.map(s => ({ ...s, balance: Number(s.balance), amount: Number(s.amount), Current_interest: Number(s.Current_interest), Accumu_interest: Number(s.Accumu_interest), }));
+
 
   if (!member) {
     return <div>Member not found</div>;
   }
 
-  return <UserProfilePage member_Id={member?.member_Id} />;
+  return <UserProfilePage member_Id={member?.member_Id} shares={safeShares}/>;
 }
 

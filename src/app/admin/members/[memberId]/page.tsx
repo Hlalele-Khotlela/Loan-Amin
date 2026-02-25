@@ -19,6 +19,7 @@ export default async function MemberProfile({
 
     include: {
       loan:true,
+      shares:true,
       savings: true,
       groupSavings: true,
       groupSavingsTransactions: true,
