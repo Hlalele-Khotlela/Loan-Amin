@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
+import { parse } from "path";
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,37 +37,38 @@ export async function POST(req: NextRequest) {
 
     // Build reset link for localhost (dev)
    
-   const link = `http://localhost:9002/admin/reset-password?token=${encodeURIComponent(jwtToken)}&id=${uuid}`;
+const baseUrl = process.env.BASE_URL || "http://localhost:9002";
+
+const link = `${baseUrl}/admin/reset-password?token=${encodeURIComponent(jwtToken)}&id=${uuid}`;
+
 
    const transporter = nodemailer.createTransport({ 
-    service: 'gmail', 
-    // from Mailtrap dashboard
-     port: 587, 
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT),
+     secure: process.env.SMTP_SECURE === "true", // Use secure connection (SSL/TLS)
+    
+     
      auth: { 
-      user: process.env.GMAIL_USER,
+      user: process.env.EMAIL_USER,
        // set in .env
-        pass: process.env.GMAIL_PASS!,
+        pass: process.env.EMAIL_PASS,
          // set in .env 
          },
          }); 
          // Send email 
          await transporter.sendMail({
-           from: 'treasurehunters034@gmail.com', 
+           from:  '"Passoword Reset" <info@treasurehunters.co.ls>', 
            to: email, 
            subject: "Password Reset Request", 
            text: `Click here to reset your password: ${link}`, 
            html: `
            <p>Click here to reset your password:</p><a href="${link}">${link}</a>`, });
 
-
-console.log("Password reset link:", link);
-
-    // TODO: send email with link (e.g. Nodemailer, Resend)
    
 
     return NextResponse.json({
       message: "Password reset link generated",
-      link, // helpful for dev testing
+      link,
     });
   } catch (err) {
     console.error("Request reset error:", err);

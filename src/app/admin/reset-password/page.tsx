@@ -1,4 +1,3 @@
-// /src/app/admin/reset-password/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -8,31 +7,28 @@ export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // read token + id from query string
   const token = decodeURIComponent(searchParams.get("token") || "");
   const id = searchParams.get("id") || "";
-
-  console.log("Frontend token:", token);
-console.log("Frontend id:", id);
-
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false); // NEW
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true); // start loading
 
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
+      setLoading(false);
       return;
     }
 
     try {
-       
       const res = await fetch("/api/admin/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -48,6 +44,8 @@ console.log("Frontend id:", id);
       }
     } catch (err) {
       setError("Network error");
+    } finally {
+      setLoading(false); // stop loading
     }
   };
 
@@ -75,9 +73,14 @@ console.log("Frontend id:", id);
         />
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+          disabled={loading} // disable while loading
+          className={`w-full p-2 rounded text-white ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
         >
-          Reset Password
+          {loading ? "Processing..." : "Reset Password"}
         </button>
       </form>
     </div>
