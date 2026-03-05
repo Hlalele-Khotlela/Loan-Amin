@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
    
 const baseUrl = process.env.BASE_URL || "http://localhost:9002";
 
+const baseUrl2 =  "https://treasurehunters.co.ls";
+
 const link = `${baseUrl}/admin/reset-password?token=${encodeURIComponent(jwtToken)}&id=${uuid}`;
 
 

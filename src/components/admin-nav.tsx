@@ -8,26 +8,34 @@ import { useEffect, useState } from "react";
 
 export function AdminNav() {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async ()=> {
       try{
          const res = await fetch("/api/me", { credentials: "include" });
-         if (!res.ok) return;
-         const data = await res.json();
+         if (res.ok) {        const data = await res.json();
          setUser(data.user);
-        
+         }
       }
       catch (err){
         console.error("Failed to fetch user", err)
 
       }
+        finally {
+          setLoading(false);
+        }
     }
 fetchUser();
     
   }, []);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   
-
+if (!user) {
+    return null; // or a loading state
+  }
   return (
     <div className="w-64 flex-none shadow-lg bg-blue-700 text-white rounded-lg border p-6">
       <ul className="mt-3 space-y-4">

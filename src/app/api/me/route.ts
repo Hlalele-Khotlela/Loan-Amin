@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
 export async function GET() {
-  // 👇 await cookies() before using .get
+  // ✅ cookies() is synchronous in route handlers
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
@@ -13,8 +13,6 @@ export async function GET() {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!);
-  
-
     return NextResponse.json({ user: payload });
   } catch {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
