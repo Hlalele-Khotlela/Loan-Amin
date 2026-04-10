@@ -29,7 +29,7 @@ type Member = {
     loans: { _sum: { balance: number }; _count: number };
     savings: { _sum: { amount: number }; _count: number };
     groupTransactions: { type: string; amount: number }[];
-    shareCapital: { _sum: { balance: number } };
+    shareCapital: { _sum: { balance: number ; amount: number} };
   };
 };
 
@@ -100,7 +100,7 @@ export default function MembersList({ members }: { members: Member[] }) {
                     {m.dashboard?.savings._sum.amount ?? 0}
                   </td>
                   <td className="px-4 py-2">
-                    {m.dashboard?.shareCapital._sum.balance ?? 0}
+                    {m.dashboard?.shareCapital._sum.amount ?? 0}
                   </td>
                   <td className="px-4 py-2">
                     {m.Status==="active" ? (

@@ -52,16 +52,24 @@ export async function proxy(req: NextRequest) {
 
     // --- Route Guards ---
     if (path.startsWith("/admin/Loans")) {
-      if (["Admin", "CreditMember", "Audit", "User"].includes(role)) return NextResponse.next();
-      // if (role === "User" && ownsResource(path, userMemberId, "Loans")) return NextResponse.next();
+      if (["Admin", "CreditMember","Audit"].includes(role)) return NextResponse.next();
+      if (["User", "CreditMember", "Audit", "User"].includes(role) && ownsResource(path, userMemberId, "Loans")) {
+        return NextResponse.next();
+      }
       return redirect(url, "/unauthorized");
     }
 
     if (path.startsWith("/admin/savings")) {
-      if(["Admin", "CreditMember", "Audit", "User"].includes(role)) return NextResponse.next();
-      // if (["User", "CreditMember", "Audit", "User"].includes(role) && ownsResource(path, userMemberId, "Savings")) {
-      //   return NextResponse.next();
-      // }
+      if(["Admin", "CreditMember", "Audit"].includes(role)) return NextResponse.next();
+      if (["User", "CreditMember", "Audit", "User"].includes(role) && ownsResource(path, userMemberId, "Savings")) {
+        return NextResponse.next();
+      }
+      return redirect(url, "/unauthorized");
+    }
+
+        if (path.startsWith("/admin/members")) {
+      if(["Admin", "CreditMember", "Audit"].includes(role)) return NextResponse.next();
+    
       return redirect(url, "/unauthorized");
     }
 
