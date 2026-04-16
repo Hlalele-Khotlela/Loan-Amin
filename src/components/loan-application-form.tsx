@@ -406,7 +406,7 @@ export function LoanApplicationModal({
           </div>
 
           {/* Actions */}
-          {/* Actions */}
+          
 <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
   <button
     type="button"

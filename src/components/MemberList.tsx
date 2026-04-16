@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import React, { useState } from "react";
+import { usePermission } from "@/hooks/usePermission";
 
 type Member = {
   member_Id: number | string;
@@ -34,6 +35,8 @@ type Member = {
 };
 
 export default function MembersList({ members }: { members: Member[] }) {
+
+  const {canViewEmails} = usePermission();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // number of rows per page
@@ -83,15 +86,29 @@ export default function MembersList({ members }: { members: Member[] }) {
                   key={m.member_Id}
                   className="border-b hover:bg-blue-50 transition-colors"
                 >
+                  {canViewEmails ? (  
                   <td className="px-4 py-2 font-mono text-gray-800">
                     <Link href={`/admin/members/${m.member_Id}`}>
                       {m.member_Id}
                     </Link>
                   </td>
+                  ):(
+                    <td className="px-4 py-2 font-mono text-gray-800">
+                      <p className="opacity-50">Hidden</p>
+                    </td>
+                   )
+                  }
                   <td className="px-4 py-2 font-medium text-gray-900">
                     {m.firstName} {m.lastName}
                   </td>
-                  <td className="px-4 py-2 text-gray-700">{m.email}</td>
+                  
+                  {canViewEmails? (
+                    <td className="px-4 py-2 text-gray-700">{m.email}</td>
+                  ):(
+                    <td className="px-4 py-2 text-gray-700 ">
+                      <p className="opacity-50">Hidden</p>
+                    </td>
+                  )}
                   <td className="px-4 py-2 text-gray-700">{m.phone}</td>
                   <td className="px-4 py-2">
                     {m.dashboard?.loans._sum.balance ?? 0}

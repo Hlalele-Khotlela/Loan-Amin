@@ -6,11 +6,12 @@ export async function loanAggregations(memberId: number) {
   const savings = await prisma.savings.groupBy({
     by: ["savings_type"],
     where: { member_Id: memberId },
-    _sum: { amount: true },
+    _sum: { amount: true, total:true},
+  
   });
 
-  const compulsory = savings.find(s => s.savings_type === "COMPULSARY")?._sum.amount ?? 0;
-  const security   = savings.find(s => s.savings_type === "SECURITY")?._sum.amount ?? 0;
+  const compulsory = savings.find(s => s.savings_type === "COMPULSARY")?._sum.total ?? 0;
+  const security   = savings.find(s => s.savings_type === "SECURITY")?._sum.total ?? 0;
 
   // Aggregate share capital separately
   const shareCapitalAgg = await prisma.shareOnCapital.aggregate({

@@ -8,6 +8,7 @@ export const Permissions: Record<Role, {
   canApproveLoans: boolean;
   canCommentOnLoans:boolean;
   canViewReports: boolean;
+  canViewEmails: boolean;
   
 }> = {
   Admin: {
@@ -18,6 +19,7 @@ export const Permissions: Record<Role, {
     canCommentOnLoans: false,
     canApproveLoans: true,
     canViewReports: true,
+    canViewEmails: true,
   },
 
   Staff: {
@@ -28,12 +30,14 @@ export const Permissions: Record<Role, {
     canCommentOnLoans: false,
     canApproveLoans: false,
     canViewReports: true,
+    canViewEmails:false,
   },
 
    CreditMember: { 
     canViewAdminDashboard: true, 
     canManageStaff: false, 
     canViewSavings: true, 
+    canViewEmails:false,
     canViewLoans: true, 
     canApproveLoans: false,
     canCommentOnLoans:true, 
@@ -47,6 +51,7 @@ export const Permissions: Record<Role, {
     canViewLoans: false,
     canApproveLoans: false,
     canViewReports: false,
+    canViewEmails:false,
   },
 
    Audit: { 
@@ -55,6 +60,7 @@ export const Permissions: Record<Role, {
     canViewSavings: true, 
     canViewLoans: true, 
     canApproveLoans: false,
+    canViewEmails:false,
     canCommentOnLoans:false, 
     canViewReports: true, },
 };
